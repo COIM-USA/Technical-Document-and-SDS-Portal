@@ -1,0 +1,1730 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>COIM Product Documentation Portal</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --coim-blue: #16A0DB;
+            --coim-black: #231F20;
+            --imuthane-purple: #7D6991;
+            --blocked-imuthane-purple: #9683A8;
+            --imuthane-systems-purple: #B09CC0;
+            --imuthane-additives-purple: #C5B5D5;
+            --imucure-purple: #8B7A9D;
+            --diexter-blue: #16A0DB;
+            --diexter-specialty-blue: #4AB8E8;
+            --isoexter-green: #6FB84A;
+            --exter-blue: #16A0DB;
+            --hydroexter-blue: #4A90E2;
+            --novacote-purple: #7D6991;
+            --neotherm-orange: #D4A574;
+            --text-dark: #2c3e50;
+            --text-light: #7f8c8d;
+            --bg-light: #f8f9fa;
+            --border-color: #dee2e6;
+            --success-green: #27ae60;
+            --warning-red: #e74c3c;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            color: var(--text-dark);
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 30px;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.08);
+        }
+
+        .header h1 {
+            font-size: 2.2rem;
+            color: var(--coim-blue);
+            margin-bottom: 10px;
+            font-weight: bold;
+        }
+
+        .header .subtitle {
+            font-size: 1rem;
+            color: var(--text-light);
+        }
+
+        .search-section {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 25px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.08);
+        }
+
+        .search-container {
+            position: relative;
+            margin-bottom: 20px;
+        }
+
+        .search-wrapper {
+            position: relative;
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-light);
+        }
+
+        .search-box {
+            width: 100%;
+            padding: 15px 50px;
+            font-size: 16px;
+            font-family: Arial, sans-serif;
+            border: 2px solid var(--border-color);
+            border-radius: 10px;
+            outline: none;
+            transition: all 0.3s ease;
+            background: var(--bg-light);
+        }
+
+        .search-box:focus {
+            border-color: var(--coim-blue);
+            background: white;
+            box-shadow: 0 0 0 3px rgba(22, 160, 219, 0.1);
+        }
+
+        .clear-button {
+            position: absolute;
+            right: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            color: var(--text-light);
+            cursor: pointer;
+            font-size: 24px;
+            padding: 5px;
+            display: none;
+            transition: color 0.2s ease;
+        }
+
+        .clear-button.visible {
+            display: block;
+        }
+
+        .clear-button:hover {
+            color: var(--warning-red);
+        }
+
+        .suggestions {
+            position: absolute;
+            top: calc(100% + 10px);
+            left: 0;
+            right: 0;
+            background: white;
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+            max-height: 400px;
+            overflow-y: auto;
+            display: none;
+            z-index: 1000;
+        }
+
+        .suggestions.active {
+            display: block;
+        }
+
+        .suggestion-item {
+            padding: 15px 20px;
+            cursor: pointer;
+            border-bottom: 1px solid var(--bg-light);
+            transition: background-color 0.2s ease;
+        }
+
+        .suggestion-item:last-child {
+            border-bottom: none;
+        }
+
+        .suggestion-item:hover,
+        .suggestion-item.selected {
+            background-color: var(--bg-light);
+        }
+
+        .suggestion-item .product-name {
+            font-weight: bold;
+            color: var(--text-dark);
+            font-size: 1rem;
+        }
+
+        .suggestion-item .product-family {
+            font-size: 0.85rem;
+            color: var(--text-light);
+            margin-top: 3px;
+        }
+
+        .suggestion-item .match-info {
+            font-size: 0.8rem;
+            color: var(--coim-blue);
+            margin-top: 3px;
+            font-style: italic;
+        }
+
+        .filter-tabs {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-bottom: 20px;
+        }
+
+        .tab {
+            padding: 12px 20px;
+            background: var(--bg-light);
+            border: 2px solid var(--border-color);
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.95rem;
+            font-family: Arial, sans-serif;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .tab:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        .tab.active {
+            color: white;
+            border-color: transparent;
+        }
+
+        .tab.all-products.active { background: var(--coim-blue); }
+        .tab.imuthane.active { background: var(--imuthane-purple); }
+        .tab.blocked-imuthane.active { background: var(--blocked-imuthane-purple); }
+        .tab.imuthane-systems.active { background: var(--imuthane-systems-purple); }
+        .tab.imuthane-additives.active { background: var(--imuthane-additives-purple); }
+        .tab.imucure.active { background: var(--imucure-purple); }
+        .tab.diexter.active { background: var(--diexter-blue); }
+        .tab.diexter-specialty.active { background: var(--diexter-specialty-blue); }
+        .tab.isoexter.active { background: var(--isoexter-green); }
+        .tab.exter-s.active { background: var(--exter-blue); }
+        .tab.hydroexter.active { background: var(--hydroexter-blue); }
+        .tab.novacote-adhesives.active,
+        .tab.novacote-coatings.active { background: var(--novacote-purple); }
+        .tab.neotherm.active { background: var(--neotherm-orange); }
+
+        .family-icon {
+            font-weight: bold;
+            font-size: 1.1rem;
+            padding: 2px 8px;
+            border-radius: 4px;
+            background: rgba(255,255,255,0.2);
+        }
+
+        .secondary-filters {
+            background: var(--bg-light);
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            display: none;
+        }
+
+        .secondary-filters.active {
+            display: block;
+        }
+
+        .filter-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .filter-title {
+            font-size: 0.9rem;
+            font-weight: bold;
+            color: var(--text-dark);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .clear-filters-btn {
+            padding: 6px 14px;
+            background: white;
+            border: 2px solid var(--border-color);
+            border-radius: 6px;
+            font-size: 0.85rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-family: Arial, sans-serif;
+        }
+
+        .clear-filters-btn:hover {
+            background: var(--warning-red);
+            color: white;
+            border-color: var(--warning-red);
+        }
+
+        .filter-group {
+            margin-bottom: 15px;
+        }
+
+        .filter-label {
+            font-size: 0.85rem;
+            color: var(--text-light);
+            margin-bottom: 8px;
+            font-weight: bold;
+        }
+
+        .filter-options {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .filter-chip {
+            padding: 8px 14px;
+            background: white;
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-size: 0.85rem;
+            font-family: Arial, sans-serif;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .filter-chip:hover:not(.disabled) {
+            border-color: var(--coim-blue);
+            transform: translateY(-1px);
+        }
+
+        .filter-chip.active {
+            background: var(--coim-blue);
+            color: white;
+            border-color: var(--coim-blue);
+        }
+
+        .filter-chip.disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+        }
+
+        .filter-chip .remove-filter {
+            font-size: 1.1rem;
+            font-weight: bold;
+            margin-left: 4px;
+        }
+
+        .filter-dropdown {
+            position: relative;
+            display: inline-block;
+        }
+
+        .dropdown-toggle {
+            padding: 8px 14px;
+            background: white;
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            font-family: Arial, sans-serif;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            min-width: 140px;
+        }
+
+        .dropdown-toggle:hover {
+            border-color: var(--coim-blue);
+        }
+
+        .dropdown-toggle.active {
+            border-color: var(--coim-blue);
+            background: var(--bg-light);
+        }
+
+        .dropdown-arrow {
+            margin-left: auto;
+            font-size: 0.7rem;
+        }
+
+        .dropdown-menu {
+            position: absolute;
+            top: calc(100% + 5px);
+            left: 0;
+            background: white;
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.15);
+            max-height: 250px;
+            overflow-y: auto;
+            display: none;
+            z-index: 100;
+            min-width: 200px;
+        }
+
+        .dropdown-menu.active {
+            display: block;
+        }
+
+        .dropdown-item {
+            padding: 10px 15px;
+            cursor: pointer;
+            transition: background 0.2s;
+            font-size: 0.85rem;
+        }
+
+        .dropdown-item:hover {
+            background: var(--bg-light);
+        }
+
+        .dropdown-item.selected {
+            background: var(--coim-blue);
+            color: white;
+            font-weight: bold;
+        }
+
+        .results-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            padding: 0 5px;
+        }
+
+        .results-count {
+            font-size: 0.95rem;
+            color: var(--text-light);
+            font-weight: bold;
+        }
+
+        .no-results-suggestion {
+            background: #fff3cd;
+            border: 2px solid #ffc107;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 20px;
+            font-size: 0.9rem;
+            color: #856404;
+        }
+
+        .no-results-suggestion strong {
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        .results-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
+            gap: 25px;
+        }
+
+        .product-card {
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .product-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.12);
+        }
+
+        .product-header {
+            padding: 20px;
+            background: white;
+            border-left: 5px solid;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+        }
+
+        .product-card.imuthane .product-header { border-left-color: var(--imuthane-purple); }
+        .product-card.blocked-imuthane .product-header { border-left-color: var(--blocked-imuthane-purple); }
+        .product-card.imuthane-systems .product-header { border-left-color: var(--imuthane-systems-purple); }
+        .product-card.imuthane-additives .product-header { border-left-color: var(--imuthane-additives-purple); }
+        .product-card.imucure .product-header { border-left-color: var(--imucure-purple); }
+        .product-card.diexter .product-header { border-left-color: var(--diexter-blue); }
+        .product-card.diexter-specialty .product-header { border-left-color: var(--diexter-specialty-blue); }
+        .product-card.isoexter .product-header { border-left-color: var(--isoexter-green); }
+        .product-card.exter-s .product-header { border-left-color: var(--exter-blue); }
+        .product-card.hydroexter .product-header { border-left-color: var(--hydroexter-blue); }
+        .product-card.novacote-adhesives .product-header,
+        .product-card.novacote-coatings .product-header { border-left-color: var(--novacote-purple); }
+        .product-card.neotherm .product-header { border-left-color: var(--neotherm-orange); }
+
+        .product-header h2 {
+            font-size: 1.3rem;
+            color: var(--text-dark);
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+
+        .product-family-badge {
+            padding: 5px 12px;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            font-weight: bold;
+            color: white;
+            white-space: nowrap;
+        }
+
+        .product-family-badge.imuthane { background: var(--imuthane-purple); }
+        .product-family-badge.blocked-imuthane { background: var(--blocked-imuthane-purple); }
+        .product-family-badge.imuthane-systems { background: var(--imuthane-systems-purple); }
+        .product-family-badge.imuthane-additives { background: var(--imuthane-additives-purple); }
+        .product-family-badge.imucure { background: var(--imucure-purple); }
+        .product-family-badge.diexter { background: var(--diexter-blue); }
+        .product-family-badge.diexter-specialty { background: var(--diexter-specialty-blue); }
+        .product-family-badge.isoexter { background: var(--isoexter-green); }
+        .product-family-badge.exter-s { background: var(--exter-blue); }
+        .product-family-badge.hydroexter { background: var(--hydroexter-blue); }
+        .product-family-badge.novacote-adhesives,
+        .product-family-badge.novacote-coatings { background: var(--novacote-purple); }
+        .product-family-badge.neotherm { background: var(--neotherm-orange); }
+
+        .product-body {
+            padding: 20px;
+            flex-grow: 1;
+        }
+
+        .specs-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .spec-item {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .spec-item.full-width {
+            grid-column: 1 / -1;
+        }
+
+        .spec-label {
+            font-size: 0.8rem;
+            color: var(--text-light);
+            margin-bottom: 4px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .spec-value {
+            font-size: 0.95rem;
+            color: var(--text-dark);
+            font-weight: bold;
+        }
+
+        .spec-value.boolean {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .check-yes {
+            color: var(--success-green);
+            font-size: 1.2rem;
+        }
+
+        .check-no {
+            color: var(--warning-red);
+            font-size: 1.2rem;
+        }
+
+        .document-links {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            padding-top: 15px;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .doc-link {
+            flex: 1;
+            min-width: 140px;
+            padding: 12px 16px;
+            background: var(--bg-light);
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
+            text-decoration: none;
+            color: var(--text-dark);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.85rem;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .doc-link:not(.disabled):hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+
+        .doc-link.tds:not(.disabled):hover {
+            background: var(--coim-blue);
+            border-color: var(--coim-blue);
+            color: white;
+        }
+
+        .doc-link.sds:not(.disabled):hover {
+            background: var(--imuthane-purple);
+            border-color: var(--imuthane-purple);
+            color: white;
+        }
+
+        .doc-link.disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            background: #f0f0f0;
+        }
+
+        .doc-link svg {
+            width: 18px;
+            height: 18px;
+            flex-shrink: 0;
+        }
+
+        .loading {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: white;
+            padding: 30px 50px;
+            border-radius: 15px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            display: none;
+            z-index: 2000;
+        }
+
+        .loading.active {
+            display: block;
+        }
+
+        .loading-spinner {
+            width: 50px;
+            height: 50px;
+            border: 4px solid var(--bg-light);
+            border-top-color: var(--coim-blue);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .no-results {
+            text-align: center;
+            padding: 60px 20px;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.08);
+            grid-column: 1 / -1;
+        }
+
+        .no-results-icon {
+            font-size: 4rem;
+            margin-bottom: 20px;
+        }
+
+        .no-results h3 {
+            font-size: 1.5rem;
+            color: var(--text-dark);
+            margin-bottom: 10px;
+            font-weight: bold;
+        }
+
+        .no-results p {
+            color: var(--text-light);
+            font-size: 1rem;
+        }
+
+        @media (max-width: 768px) {
+            .results-container {
+                grid-template-columns: 1fr;
+            }
+
+            .specs-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .filter-tabs {
+                flex-direction: column;
+            }
+
+            .tab {
+                width: 100%;
+                justify-content: center;
+            }
+
+            .filter-options {
+                flex-direction: column;
+            }
+
+            .filter-chip,
+            .dropdown-toggle {
+                width: 100%;
+            }
+        }
+
+        /* Footer Styles */
+        .portal-footer {
+            margin-top: 60px;
+            padding: 25px 20px;
+            background: var(--bg-light);
+            border-top: 1px solid var(--border-color);
+            text-align: center;
+            font-size: 0.85rem;
+            color: var(--text-light);
+        }
+
+        .portal-footer .timestamp {
+            margin-bottom: 8px;
+            font-family: 'Courier New', monospace;
+            color: var(--text-medium);
+        }
+
+        .portal-footer .contact {
+            color: var(--text-light);
+        }
+
+        .portal-footer a {
+            color: var(--coim-blue);
+            text-decoration: none;
+        }
+
+        .portal-footer a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>COIM Product Documentation Portal</h1>
+            <p class="subtitle">Technical Data Sheets & Safety Data Sheets</p>
+        </div>
+
+        <div class="search-section">
+            <div class="search-container">
+                <div class="search-wrapper">
+                    <span class="search-icon">🔍</span>
+                    <input 
+                        type="text" 
+                        id="searchInput" 
+                        class="search-box" 
+                        placeholder="Search by product name, code, or any specification..."
+                        autocomplete="off"
+                    >
+                    <button id="clearButton" class="clear-button">×</button>
+                </div>
+                <div id="suggestions" class="suggestions"></div>
+            </div>
+
+            <div class="filter-tabs">
+                <div class="tab all-products active" data-family="all">
+                    <span>All Products</span>
+                </div>
+                <div class="tab imuthane" data-family="Imuthane">
+                    <span class="family-icon">Im</span>
+                    <span>Imuthane</span>
+                </div>
+                <div class="tab blocked-imuthane" data-family="Blocked Imuthane">
+                    <span class="family-icon">Im</span>
+                    <span>Blocked Imuthane</span>
+                </div>
+                <div class="tab imuthane-systems" data-family="Imuthane Systems">
+                    <span class="family-icon">Im</span>
+                    <span>Imuthane Systems</span>
+                </div>
+                <div class="tab imuthane-additives" data-family="Imuthane Additives">
+                    <span class="family-icon">Im</span>
+                    <span>Imuthane Additives</span>
+                </div>
+                <div class="tab imucure" data-family="Imucure">
+                    <span class="family-icon">Im</span>
+                    <span>Imucure</span>
+                </div>
+                <div class="tab diexter" data-family="Diexter">
+                    <span class="family-icon">D</span>
+                    <span>Diexter</span>
+                </div>
+                <div class="tab diexter-specialty" data-family="Diexter Specialty">
+                    <span class="family-icon">Ds</span>
+                    <span>Diexter Specialty</span>
+                </div>
+                <div class="tab isoexter" data-family="Isoexter">
+                    <span class="family-icon">Ix</span>
+                    <span>Isoexter</span>
+                </div>
+                <div class="tab exter-s" data-family="Exter-S">
+                    <span class="family-icon">Ex</span>
+                    <span>Exter S</span>
+                </div>
+                <div class="tab hydroexter" data-family="Hydroexter">
+                    <span class="family-icon">Hx</span>
+                    <span>Hydroexter</span>
+                </div>
+                <div class="tab novacote-adhesives" data-family="Novacote Adhesives">
+                    <span class="family-icon">N</span>
+                    <span>Novacote Adhesives</span>
+                </div>
+                <div class="tab novacote-coatings" data-family="Novacote Coatings">
+                    <span class="family-icon">N</span>
+                    <span>Novacote Coatings</span>
+                </div>
+                <div class="tab neotherm" data-family="Neotherm">
+                    <span class="family-icon">Nt</span>
+                    <span>Neotherm</span>
+                </div>
+            </div>
+
+            <div id="secondaryFilters" class="secondary-filters"></div>
+        </div>
+
+        <div class="results-header">
+            <div id="resultsCount" class="results-count"></div>
+        </div>
+        
+        <div id="noResultsSuggestion" class="no-results-suggestion" style="display: none;">
+            <strong>No products match your current filters</strong>
+            Try removing some filters to see more results.
+        </div>
+
+        <div id="resultsContainer" class="results-container"></div>
+    </div>
+
+    <div id="loading" class="loading">
+        <div class="loading-spinner"></div>
+    </div>
+
+    <script>
+        // [Product data will be inserted here - keeping the same structure as before]
+        const products = [{"family":"Imuthane","productName":"IMUTHANE 12-70A","shortName":"IMUTHANE 12-70A","productType":"CONVENTIONAL","shoreHardness":"70A","chemistry":"TDI Polyester","ncoRange":"2.3 – 2.7","viscosity":"800 – 1,200 at 100°C","potLife":"14 minutes","tdsUrl":"https://coimus.sharepoint.com/sites/TDS-TechnicalDataSheets/Shared Documents/PDFs/Imuthane/Imuthane Conventional/TDS 12-70A.pdf","sdsUrl":"https://coimus.sharepoint.com/sites/COIMUSAHUB/Safety Data Sheet/Finished Goods/Imuthane-Conv/SDS_Imuthane 12-70A.PDF"},{"family":"Imuthane","productName":"IMUTHANE 13-95A","shortName":"IMUTHANE 13-95A","productType":"CONVENTIONAL","shoreHardness":"95A","chemistry":"TDI Polyester","ncoRange":"5.5 – 6.0","viscosity":"200 – 600 at 100°C","potLife":"2 minutes","tdsUrl":"https://coimus.sharepoint.com/sites/TDS-TechnicalDataSheets/Shared Documents/PDFs/Imuthane/Imuthane Conventional/TDS 13-95A.pdf","sdsUrl":"https://coimus.sharepoint.com/sites/COIMUSAHUB/Safety Data Sheet/Finished Goods/Imuthane-Conv/SDS_Imuthane 13-95A.pdf"},{"family":"Imuthane","productName":"IMUTHANE 22-83A","shortName":"IMUTHANE 22-83A","productType":"CONVENTIONAL","shoreHardness":"83A","chemistry":"TDI Polyether","ncoRange":"3.1 – 3.5","viscosity":"500 – 800 at 100°C","potLife":"14 minutes","tdsUrl":"https://coimus.sharepoint.com/sites/TDS-TechnicalDataSheets/Shared Documents/PDFs/Imuthane/Imuthane Conventional/TDS 22-83A.pdf","sdsUrl":"https://coimus.sharepoint.com/sites/COIMUSAHUB/Safety Data Sheet/Finished Goods/Imuthane-Conv/SDS_Imuthane 22-83A.pdf"},{"family":"Imuthane","productName":"IMUTHANE 22-86A","shortName":"IMUTHANE 22-86A","productType":"CONVENTIONAL","shoreHardness":"87A","chemistry":"TDI Polyether","ncoRange":"3.1 – 3.5","viscosity":"550 – 950 at 100°C","potLife":"10 minutes","tdsUrl":"https://coimus.sharepoint.com/sites/TDS-TechnicalDataSheets/Shared Documents/PDFs/Imuthane/Imuthane Conventional/TDS 22-86A.pdf","sdsUrl":"https://coimus.sharepoint.com/sites/COIMUSAHUB/Safety Data Sheet/Finished Goods/Imuthane-Conv/SDS_Imuthane 22-86A.PDF"},{"family":"Imuthane","productName":"IMUTHANE 22-90A","shortName":"IMUTHANE 22-90A","productType":"CONVENTIONAL","shoreHardness":"90A","chemistry":"TDI Polyether","ncoRange":"4.0 – 4.4","viscosity":"400 – 700 at 100°C","potLife":"10 minutes","tdsUrl":"https://coimus.sharepoint.com/sites/TDS-TechnicalDataSheets/Shared Documents/PDFs/Imuthane/Imuthane Conventional/TDS 22-90A.pdf","sdsUrl":"https://coimus.sharepoint.com/sites/COIMUSAHUB/Safety Data Sheet/Finished Goods/Imuthane-Conv/SDS_Imuthane 22-90A.pdf"},{"family":"Imuthane","productName":"IMUTHANE 22-95A","shortName":"IMUTHANE 22-95A","productType":"CONVENTIONAL","shoreHardness":"95A","chemistry":"TDI Polyether","ncoRange":"6.1 – 6.5","viscosity":"150 – 450 at 100°C","potLife":"5 minutes","tdsUrl":"https://coimus.sharepoint.com/sites/TDS-TechnicalDataSheets/Shared Documents/PDFs/Imuthane/Imuthane Conventional/TDS 22-95A.pdf","sdsUrl":"https://coimus.sharepoint.com/sites/COIMUSAHUB/Safety Data Sheet/Finished Goods/Imuthane-Conv/SDS_Imuthane 22-95A.pdf"},{"family":"Imuthane","productName":"IMUTHANE 23-95A","shortName":"IMUTHANE 23-95A","productType":"CONVENTIONAL","shoreHardness":"97A","chemistry":"TDI Polyether","ncoRange":"6.1 – 6.5","viscosity":"50 – 400 at 100°C","potLife":"3 minutes","tdsUrl":"https://coimus.sharepoint.com/sites/TDS-TechnicalDataSheets/Shared Documents/PDFs/Imuthane/Imuthane Conventional/TDS 23-95A.pdf","sdsUrl":"https://coimus.sharepoint.com/sites/COIMUSAHUB/Safety Data Sheet/Finished Goods/Imuthane-Conv/SDS_Imuthane 23-95A.PDF"},{"family":"Imuthane","productName":"IMUTHANE 33-85A","shortName":"IMUTHANE 33-85A","productType":"CONVENTIONAL","shoreHardness":"85A","chemistry":"TDI Polyether","ncoRange":"4.0 – 4.4","viscosity":"150 – 450 at 100°C","potLife":"10 minutes","tdsUrl":"https://coimus.sharepoint.com/sites/TDS-TechnicalDataSheets/Shared Documents/PDFs/Imuthane/Imuthane Conventional/TDS 33-85A.pdf","sdsUrl":"https://coimus.sharepoint.com/sites/COIMUSAHUB/Safety Data Sheet/Finished Goods/Imuthane-Conv/SDS_Imuthane 33-85A.PDF"},{"family":"Imuthane","productName":"IMUTHANE 42-50A","shortName":"IMUTHANE 42-50A","productType":"CONVENTIONAL","shoreHardness":"50A","chemistry":"TDI Polycaprolactone","ncoRange":"2.5 – 2.9","viscosity":"1,400 – 1,800 at 80°C","potLife":"25 minutes","tdsUrl":"https://coimus.sharepoint.com/sites/TDS-TechnicalDataSheets/Shared Documents/PDFs/Imuthane/Imuthane Conventional/TDS 42-50A.pdf","sdsUrl":"https://coimus.sharepoint.com/sites/COIMUSAHUB/Safety Data Sheet/Finished Goods/Imuthane-Conv/SDS_Imuthane 42-50A.PDF"},{"family":"Imuthane","productName":"IMUTHANE 42-60A","shortName":"IMUTHANE 42-60A","productType":"CONVENTIONAL","shoreHardness":"60A","chemistry":"TDI Polycaprolactone","ncoRange":"3.1 – 3.5","viscosity":"500 – 1,100 at 100°C","potLife":"9 minutes","tdsUrl":"https://coimus.sharepoint.com/sites/TDS-TechnicalDataSheets/Shared Documents/PDFs/Imuthane/Imuthane Conventional/TDS 42-60A.pdf","sdsUrl":"https://coimus.sharepoint.com/sites/COIMUSAHUB/Safety Data Sheet/Finished Goods/Imuthane-Conv/SDS_Imuthane 42-60A.PDF"},{"family":"Imuthane","productName":"IMUTHANE 17-85A","shortName":"IMUTHANE 17-85A","productType":"CONVENTIONAL","shoreHardness":"85A","chemistry":"MDI Polyester","ncoRange":"6.5 – 6.9","viscosity":"400 – 1,000 at 100°C","potLife":"6 minutes","tdsUrl":"https://coimus.sharepoint.com/sites/TDS-TechnicalDataSheets/Shared Documents/PDFs/Imuthane/Imuthane Conventional/TDS 17-85A.pdf","sdsUrl":"https://coimus.sharepoint.com/sites/COIMUSAHUB/Safety Data Sheet/Finished Goods/Imuthane-Conv/SDS_Imuthane 17-85A.PDF"},{"family":"Imuthane","productName":"IMUTHANE 17-91A","shortName":"IMUTHANE 17-91A","productType":"CONVENTIONAL","shoreHardness":"91A","chemistry":"MDI Polyester","ncoRange":"7.7 – 8.1","viscosity":"300 – 700 at 100°C","potLife":"5 minutes","tdsUrl":"https://coimus.sharepoint.com/sites/TDS-TechnicalDataSheets/Shared Documents/PDFs/Imuthane/Imuthane Conventional/TDS 17-91A.pdf","sdsUrl":"https://coimus.sharepoint.com/sites/COIMUSAHUB/Safety Data Sheet/Finished Goods/Imuthane-Conv/SDS_Imuthane 17-91A.pdf"},{"family":"Imuthane","productName":"IMUTHANE 18-86A","shortName":"IMUTHANE 18-86A","productType":"CONVENTIONAL","shoreHardness":"86A","chemistry":"MDI Polyester","ncoRange":"6.6 – 6.9","viscosity":"700 – 1,200 at 100°C","potLife":"7 minutes","tdsUrl":"https://coimus.sharepoint.com/sites/TDS-TechnicalDataSheets/Shared Documents/PDFs/Imuthane/Imuthane Conventional/TDS 18-86A.pdf","sdsUrl":"https://coimus.sharepoint.com/sites/COIMUSAHUB/Safety Data Sheet/Finished Goods/Imuthane-Conv/SDS_Imuthane 18-86A.PDF"},{"family":"Imuthane","productName":"IMUTHANE 18-95A","shortName":"IMUTHANE 18-95A","productType":"CONVENTIONAL","shoreHardness":"95A","chemistry":"MDI Polyester","ncoRange":"9.4 – 9.8","viscosity":"300 – 500 at 100°C","potLife":"5 minutes","tdsUrl":"https://coimus.sharepoint.com/sites/TDS-TechnicalDataSheets/Shared Documents/PDFs/Imuthane/Imuthane Conventional/TDS 18-95A.pdf","sdsUrl":"https://coimus.sharepoint.com/sites/COIMUSAHUB/Safety Data Sheet/Finished Goods/Imuthane-Conv/SDS_Imuthane 18-95A.PDF"},{"family":"Imuthane","productName":"IMUTHANE 18-96A","shortName":"IMUTHANE 18-96A","productType":"CONVENTIONAL","shoreHardness":"95A","chemistry":"MDI Polyester","ncoRange":"8.3 – 8.7","viscosity":"500 – 1,100 at 100°C","potLife":"5 minutes","tdsUrl":"https://coimus.sharepoint.com/sites/TDS-TechnicalDataSheets/Shared Documents/PDFs/Imuthane/Imuthane Conventional/TDS 18-96A.pdf","sdsUrl":"https://coimus.sharepoint.com/sites/COIMUSAHUB/Safety Data Sheet/Finished Goods/Imuthane-Conv/SDS_Imuthane 18-96A.PDF"},{"family":"Imuthane","productName":"IMUTHANE 17-55D","shortName":"IMUTHANE 17-55D","productType":"CONVENTIONAL","shoreHardness":"55D","chemistry":"MDI Polyester","ncoRange":"12.3 – 12.7","viscosity":"150 – 600 at 100°C","potLife":"3 minutes","tdsUrl":"https://coimus.sharepoint.com/sites/TDS-TechnicalDataSheets/Shared Documents/PDFs/Imuthane/Imuthane Conventional/TDS 17-55D.pdf","sdsUrl":"https://coimus.sharepoint.com/sites/COIMUSAHUB/Safety Data Sheet/Finished Goods/Imuthane-Conv/SDS_Imuthane 17-55D.pdf"},{"family":"Imuthane","productName":"IMUTHANE 18Q","shortName":"IMUTHANE 18Q","productType":"CONVENTIONAL","shoreHardness":"Varies by System","chemistry":"MDI Polyester-Quasi","ncoRange":"18.7 – 19.2","viscosity":"1,250 – 1,850 at 25°C","potLife":"Varies by System","tdsUrl":"https://coimus.sharepoint.com/sites/TDS-TechnicalDataSheets/Shared Documents/PDFs/Imuthane/Imuthane Conventional/TDS 18Q.pdf","sdsUrl":"https://coimus.sharepoint.com/sites/COIMUSAHUB/Safety Data Sheet/Finished Goods/Imuthane-Conv/SDS_Imuthane 18Q.PDF"},{"family":"Imuthane","productName":"IMUTHANE 27-85A","shortName":"IMUTHANE 27-85A","productType":"CONVENTIONAL","shoreHardness":"85A","chemistry":"MDI Polyether","ncoRange":"6.3 – 6.7","viscosity":"600 – 950 at 100°C","potLife":"8 minutes","tdsUrl":"https://coimus.sharepoint.com/sites/TDS-TechnicalDataSheets/Shared Documents/PDFs/Imuthane/Imuthane Conventional/TDS 27-85A.pdf","sdsUrl":"https://coimus.sharepoint.com/sites/COIMUSAHUB/Safety Data Sheet/Finished Goods/Imuthane-Conv/SDS_Imuthane 27-85A.pdf"},{"family":"Imuthane","productName":"IMUTHANE 27-90A","shortName":"IMUTHANE 27-90A","productType":"CONVENTIONAL","shoreHardness":"90A","chemistry":"MDI Polyether","ncoRange":"7.2 – 7.6","viscosity":"450 – 700 at 100°C","potLife":"5 minutes","tdsUrl":"https://coimus.sharepoint.com/sites/TDS-TechnicalDataSheets/Shared Documents/PDFs/Imuthane/Imuthane Conventional/TDS 27-90A.pdf","sdsUrl":"https://coimus.sharepoint.com/sites/COIMUSAHUB/Safety Data Sheet/Finished Goods/Imuthane-Conv/SDS_Imuthane 27-90A.pdf"},{"family":"Imuthane","productName":"IMUTHANE 27-95A","shortName":"IMUTHANE 27-95A","productType":"CONVENTIONAL","shoreHardness":"95A","chemistry":"MDI Polyether","ncoRange":"8.7 – 9.1","viscosity":"300 – 600 at 100°C","potLife":"3 minutes","tdsUrl":"https://coimus.sharepoint.com/sites/TDS-TechnicalDataSheets/Shared Documents/PDFs/Imuthane/Imuthane Conventional/TDS 27-95A.pdf","sdsUrl":"https://coimus.sharepoint.com/sites/COIMUSAHUB/Safety Data Sheet/Finished Goods/Imuthane-Conv/SDS_Imuthane 27-95A.PDF"},{"family":"Imuthane","productName":"IMUTHANE 28-95A","shortName":"IMUTHANE 28-95A","productType":"CONVENTIONAL","shoreHardness":"95A","chemistry":"MDI Polyether","ncoRange":"9.8 – 10.2","viscosity":"200 – 500 at 100°C","potLife":"6 minutes","tdsUrl":"https://coimus.sharepoint.com/sites/TDS-TechnicalDataSheets/Shared Documents/PDFs/Imuthane/Imuthane Conventional/TDS 28-95A.pdf","sdsUrl":"https://coimus.sharepoint.com/sites/COIMUSAHUB/Safety Data Sheet/Finished Goods/Imuthane-Conv/SDS_Imuthane 28-95A.pdf"},{"family":"Imuthane","productName":"IMUTHANE 1P-95A","shortName":"IMUTHANE 1P-95A","productType":"CONVENTIONAL","shoreHardness":"95A","chemistry":"PPDI Polyester","ncoRange":"3.2 – 3.6","viscosity":"1,200 – 2,900 at 100°C","potLife":"2 minutes","tdsUrl":"https://coimus.sharepoint.com/sites/TDS-TechnicalDataSheets/Shared Documents/PDFs/Imuthane/Imuthane Conventional/TDS 1P-95A.pdf","sdsUrl":"https://coimus.sharepoint.com/sites/COIMUSAHUB/Safety Data Sheet/Finished Goods/Imuthane-Conv/SDS_Imuthane 1P-95A.PDF"},{"family":"Imuthane","productName":"IMUTHANE 4P-95A","shortName":"IMUTHANE 4P-95A","productType":"CONVENTIONAL","shoreHardness":"95A","chemistry":"PPDI Polyester","ncoRange":"3.8 – 4.2","viscosity":"300 – 800 at 100°C","potLife":"3 minutes","tdsUrl":"https://coimus.sharepoint.com/sites/TDS-TechnicalDataSheets/Shared Documents/PDFs/Imuthane/Imuthane Conventional/TDS 4P-95A.pdf","sdsUrl":"https://coimus.sharepoint.com/sites/COIMUSAHUB/Safety Data Sheet/Finished Goods/Imuthane-Conv/SDS_Imuthane 4P-95A.PDF"},{"family":"Imuthane","productName":"IMUTHANE 47-95A","shortName":"IMUTHANE 47-95A","productType":"CONVENTIONAL","shoreHardness":"95A","chemistry":"MDI Polycaprolactone","ncoRange":"9.6 – 10.0","viscosity":"150 – 400 at 100°C","potLife":"4 minutes","tdsUrl":"https://coimus.sharepoint.com/sites/TDS-TechnicalDataSheets/Shared Documents/PDFs/Imuthane/Imuthane Conventional/TDS 47-95A.pdf","sdsUrl":"https://coimus.sharepoint.com/sites/COIMUSAHUB/Safety Data Sheet/Finished Goods/Imuthane-Conv/SDS_Imuthane 47-95A.PDF"},{"family":"Imuthane","productName":"IMUTHANE PST-70A","shortName":"IMUTHANE PST-70A","productType":"LOW FREE (LF)","shoreHardness":"72A","chemistry":"TDI Polyester","ncoRange":"2.1 – 2.6","viscosity":"3,000 – 4,500 at 70°C","potLife":"14 minutes","tdsUrl":"https://coimus.sharepoint.com/sites/TDS-TechnicalDataSheets/Shared Documents/PDFs/Imuthane/Imuthane Low-free/TDS PST-70A.pdf","sdsUrl":"https://coimus.sharepoint.com/sites/COIMUSAHUB/Safety Data Sheet/Finished Goods/Imuthane LF/SDS_Imuthane PST-70A.PDF"},{"family":"Imuthane","productName":"IMUTHANE PST-75A","shortName":"IMUTHANE PST-75A","productType":"LOW FREE (LF)","shoreHardness":"75A","chemistry":"TDI Polyester","ncoRange":"2.7 – 3.1","viscosity":"2,700 – 3,500 at 70°C","potLife":"11 minutes","tdsUrl":"https://coimus.sharepoint.com/sites/TDS-TechnicalDataSheets/Shared Documents/PDFs/Imuthane/Imuthane Low-free/TDS PST-75A.pdf","sdsUrl":"https://coimus.sharepoint.com/sites/COIMUSAHUB/Safety Data Sheet/Finished Goods/Imuthane LF/SDS_Imuthane PST-75A.pdf"},{"family":"Imuthane","productName":"IMUTHANE PST-80A","shortName":"IMUTHANE PST-80A","productType":"LOW FREE (LF)","shoreHardness":"80A","chemistry":"TDI Polyester","ncoRange":"2.9 – 3.3","viscosity":"2,000 – 3,100 at 70°C","potLife":"12 minutes","tdsUrl":"https://coimus.sharepoint.com/sites/TDS-TechnicalDataSheets/Shared Documents/PDFs/Imuthane/Imuthane Low-free/TDS PST-80A.pdf","sdsUrl":"https://coimus.sharepoint.com/sites/COIMUSAHUB/Safety Data Sheet/Finished Goods/Imuthane LF/SDS_Imuthane PST-80A.PDF"},{"family":"Imuthane","productName":"IMUTHANE PST-85A","shortName":"IMUTHANE PST-85A","productType":"LOW FREE (LF)","shoreHardness":"85A","chemistry":"TDI Polyester","ncoRange":"3.5 – 3.8","viscosity":"1,800 – 2,500 at 70°C","potLife":"8 minutes","tdsUrl":"https://coimus.sharepoint.com/sites/TDS-TechnicalDataSheets/Shared Documents/PDFs/Imuthane/Imuthane Low-free/TDS PST-85A.pdf","sdsUrl":"https://coimus.sharepoint.com/sites/COIMUSAHUB/Safety Data Sheet/Finished Goods/Imuthane LF/SDS_Imuthane PST-85A.pdf"},{"family":"Imuthane","productName":"IMUTHANE PST-90A","shortName":"IMUTHANE PST-90A","productType":"LOW FREE (LF)","shoreHardness":"90A","chemistry":"TDI Polyester","ncoRange":"4.2 – 4.6","viscosity":"1,600 – 2,300 at 70°C","potLife":"8 minutes","tdsUrl":"https://coimus.sharepoint.com/sites/TDS-TechnicalDataSheets/Shared Documents/PDFs/Imuthane/Imuthane Low-free/TDS PST-90A.pdf","sdsUrl":"https://coimus.sharepoint.com/sites/COIMUSAHUB/Safety Data Sheet/Finished Goods/Imuthane LF/SDS_Imuthane PST-90A.PDF"},{"family":"Imuthane","productName":"IMUTHANE PST-93A","shortName":"IMUTHANE PST-93A","productType":"LOW FREE (LF)","shoreHardness":"93A","chemistry":"TDI Polyester","ncoRange":"4.8 – 5.2","viscosity":"1,800 – 2,300 at 70°C","potLife":"4 minutes","tdsUrl":"https://coimus.sharepoint.com/sites/TDS-TechnicalDataSheets/Shared Documents/PDFs/Imuthane/Imuthane Low-free/TDS PST-93A.pdf","sdsUrl":"https://coimus.sharepoint.com/sites/COIMUSAHUB/Safety Data Sheet/Finished Goods/Imuthane LF/SDS_Imuthane PST-93A.PDF"},{"family":"Imuthane","productName":"IMUTHANE PST-95A","shortName":"IMUTHANE PST-95A","productType":"LOW FREE (LF)","shoreHardness":"95A","chemistry":"TDI Polyester","ncoRange":"4.8 – 5.3","viscosity":"1,500 – 2,000 at 70°C","potLife":"4 minutes","tdsUrl":"https://coimus.sharepoint.com/sites/TDS-TechnicalDataSheets/Shared Documents/PDFs/Imuthane/Imuthane Low-free/TDS PST-95A.pdf","sdsUrl":"https://coimus.sharepoint.com/sites/COIMUSAHUB/Safety Data Sheet/Finished Goods/Imuthane LF/SDS_Imuthane PST-95A.pdf"},{"family":"Imuthane","productName":"IMUTHANE PST-50D","shortName":"IMUTHANE PST-50D","productType":"LOW FREE (LF)","shoreHardness":"50D","chemistry":"TDI Polyester","ncoRange":"5.1 – 5.6","viscosity":"1,600 – 2,200 at 70°C","potLife":"3 minutes","tdsUrl":"https://coimus.sharepoint.com/sites/TDS-TechnicalDataSheets/Shared Documents/PDFs/Imuthane/Imuthane Low-free/TDS PST-50D.pdf","sdsUrl":"https://coimus.sharepoint.com/sites/COIMUSAHUB/Safety Data Sheet/Finished Goods/Imuthane LF/SDS_Imuthane PST-50D.pdf"},{"family":"Imuthane","productName":"IMUTHANE APT-888","shortName":"IMUTHANE APT-888","productType":"LOW FREE (LF)","shoreHardness":"Coating/Adhesive System Dependent","chemistry":"TDI Polyether","ncoRange":"8.5 – 9.2","viscosity":"675 – 1,000 at 70°C","potLife":"Varies","tdsUrl":"https://coimus.sharepoint.com/sites/TDS-TechnicalDataSheets/Shared Documents/PDFs/Imuthane/Imuthane Low-free/TDS APT-888.pdf","sdsUrl":"https://coimus.sharepoint.com/sites/COIMUSAHUB/Safety Data Sheet/Finished Goods/Imuthane LF/SDS_Imuthane APT-888.pdf"},{"family":"Imuthane","productName":"IMUTHANE PET-80A","shortName":"IMUTHANE PET-80A","productType":"LOW FREE (LF)","shoreHardness":"80A","chemistry":"TDI Polyether","ncoRange":"2.5 – 2.9","viscosity":"1,850 – 2,400 at 70°C","potLife":"15 minutes","tdsUrl":"https://coimus.sharepoint.com/sites/TDS-TechnicalDataSheets/Shared Documents/PDFs/Imuthane/Imuthane Low-free/TDS PET-80A.pdf","sdsUrl":"https://coimus.sharepoint.com/sites/COIMUSAHUB/Safety Data Sheet/Finished Goods/Imuthane LF/SDS_Imuthane PET-80A.PDF"},{"family":"Imuthane","productName":"IMUTHANE PET-85A","shortName":"IMUTHANE PET-85A","productType":"LOW FREE (LF)","shoreHardness":"85A","chemistry":"TDI Polyether","ncoRange":"3.2 – 3.6","viscosity":"1,400 – 1,700 at 70°C","potLife":"12 minutes","tdsUrl":"https://coimus.sharepoint.com/sites/TDS-TechnicalDataSheets/Shared Documents/PDFs/Imuthane/Imuthane Low-free/TDS PET-85A.pdf","sdsUrl":"https://coimus.sharepoint.com/sites/COIMUSAHUB/Safety Data Sheet/Finished Goods/Imuthane LF/SDS_Imuthane PET-85A.pdf"},{"family":"Imuthane","productName":"IMUTHANE PET-91A","shortName":"IMUTHANE PET-91A","productType":"LOW FREE (LF)","shoreHardness":"90A","chemistry":"TDI Polyether","ncoRange":"4.1 – 4.5","viscosity":"600 – 1,300 at 70°C","potLife":"9 minutes","tdsUrl":"https://coimus.sharepoint.com/sites/TDS-TechnicalDataSheets/Shared Documents/PDFs/Imuthane/Imuthane Low-free/TDS PET-91A.pdf","sdsUrl":"https://coimus.sharepoint.com/sites/COIMUSAHUB/Safety Data Sheet/Finished Goods/Imuthane LF/SDS_Imuthane PET-91A.PDF"},{"family":"Imuthane","productName":"IMUTHANE PET-93A","shortName":"IMUTHANE PET-93A","productType":"LOW FREE (LF)","shoreHardness":"93A","chemistry":"TDI Polyether","ncoRange":"5.0 – 5.4","viscosity":"485 – 785 at 70°C","potLife":"7 minutes","tdsUrl":"https://coimus.sharepoint.com/sites/TDS-TechnicalDataSheets/Shared Documents/PDFs/Imuthane/Imuthane Low-free/TDS PET-93A.pdf","sdsUrl":"https://coimus.sharepoint.com/sites/COIMUSAHUB/Safety Data Sheet/Finished Goods/Imuthane LF/SDS_Imuthane PET-93A.PDF"},{"family":"Imuthane","productName":"IMUTHANE PET-95A","shortName":"IMUTHANE PET-95A","productType":"LOW FREE (LF)","shoreHardness":"95A","chemistry":"TDI Polyether","ncoRange":"6.0 – 6.5","viscosity":"350 – 500 at 70°C","potLife":"6 minutes","tdsUrl":"https://coimus.sharepoint.com/sites/TDS-TechnicalDataSheets/Shared Documents/PDFs/Imuthane/Imuthane Low-free/TDS PET-95A.pdf","sdsUrl":"https://coimus.sharepoint.com/sites/COIMUSAHUB/Safety Data Sheet/Finished Goods/Imuthane LF/SDS_Imuthane PET-95A SPL.PDF"},{"family":"Imuthane","productName":"IMUTHANE PET-60D","shortName":"IMUTHANE PET-60D","productType":"LOW FREE (LF)","shoreHardness":"60D","chemistry":"TDI Polyether","ncoRange":"7.0 – 7.6","viscosity":"300 – 500 at 70°C","potLife":"5 minutes","tdsUrl":"https://coimus.sharepoint.com/sites/TDS-TechnicalDataSheets/Shared Documents/PDFs/Imuthane/Imuthane Low-free/TDS PET-60D.pdf","sdsUrl":"https://coimus.sharepoint.com/sites/COIMUSAHUB/Safety Data Sheet/Finished Goods/Imuthane LF/SDS_Imuthane PET-60D.PDF"},{"family":"Imuthane","productName":"IMUTHANE PET-70D","shortName":"IMUTHANE PET-70D","productType":"LOW FREE (LF)","shoreHardness":"70D","chemistry":"TDI Polyether","ncoRange":"8.4 – 8.9","viscosity":"260 – 460 at 70°C","potLife":"3.5 minutes","tdsUrl":"https://coimus.sharepoint.com/sites/TDS-TechnicalDataSheets/Shared Documents/PDFs/Imuthane/Imuthane Low-free/TDS PET-70D.pdf","sdsUrl":"https://coimus.sharepoint.com/sites/COIMUSAHUB/Safety Data Sheet/Finished Goods/Imuthane LF/SDS_Imuthane PET-70D XS.PDF"},{"family":"Imuthane","productName":"IMUTHANE PET-75D","shortName":"IMUTHANE PET-75D","productType":"LOW FREE (LF)","shoreHardness":"75D","chemistry":"TDI Polyether","ncoRange":"8.9 – 9.4","viscosity":"150 – 600 at 70°C","potLife":"2.5 minutes","tdsUrl":"https://coimus.sharepoint.com/sites/TDS-TechnicalDataSheets/Shared Documents/PDFs/Imuthane/Imuthane Low-free/TDS PET-75D.pdf","sdsUrl":"https://coimus.sharepoint.com/sites/COIMUSAHUB/Safety Data Sheet/Finished Goods/Imuthane LF/SDS_Imuthane PET-75D XS.PDF"},{"family":"Imuthane","productName":"IMUTHANE PHP-70A","shortName":"IMUTHANE PHP-70A","productType":"LOW FREE (LF)","shoreHardness":"70A","chemistry":"TDI Polyether","ncoRange":"1.8 – 2.3","viscosity":"800 – 1,100 at 70°C","potLife":"35 minutes","tdsUrl":"https://coimus.sharepoint.com/sites/TDS-TechnicalDataSheets/Shared Documents/PDFs/Imuthane/Imuthane Low-free/TDS PHP-70A.pdf","sdsUrl":"https://coimus.sharepoint.com/sites/COIMUSAHUB/Safety Data Sheet/Finished Goods/Imuthane LF/SDS_Imuthane PHP-70A.pdf"},{"family":"Imuthane","productName":"IMUTHANE PHP-80A","shortName":"IMUTHANE PHP-80A","productType":"LOW FREE (LF)","shoreHardness":"80A","chemistry":"TDI Polyether","ncoRange":"2.6 – 3.0","viscosity":"800 – 1,100 at 70°C","potLife":"20 minutes","tdsUrl":"https://coimus.sharepoint.com/sites/TDS-TechnicalDataSheets/Shared Documents/PDFs/Imuthane/Imuthane Low-free/TDS PHP-80A.pdf","sdsUrl":"https://coimus.sharepoint.com/sites/COIMUSAHUB/Safety Data Sheet/Finished Goods/Imuthane LF/SDS_Imuthane PHP-80A.pdf"},{"family":"Imuthane","productName":"IMUTHANE PHP-60D","shortName":"IMUTHANE PHP-60D","productType":"LOW FREE (LF)","shoreHardness":"60D","chemistry":"TDI Polyether","ncoRange":"7.0 - 7.6","viscosity":"300 – 700 at 70°C","potLife":"5 minutes","tdsUrl":"https://coimus.sharepoint.com/sites/TDS-TechnicalDataSheets/Shared Documents/PDFs/Imuthane/Imuthane Low-free/TDS PHP-60D.pdf","sdsUrl":"https://coimus.sharepoint.com/sites/COIMUSAHUB/Safety Data Sheet/Finished Goods/Imuthane LF/SDS_Imuthane PHP-60D.PDF"},{"family":"Imuthane","productName":"IMUTHANE PHP-75D","shortName":"IMUTHANE PHP-75D","productType":"LOW FREE (LF)","shoreHardness":"75D","chemistry":"TDI Polyether","ncoRange":"8.8 – 9.3","viscosity":"500 – 800 at 70°C","potLife":"3 minutes","tdsUrl":"https://coimus.sharepoint.com/sites/TDS-TechnicalDataSheets/Shared Documents/PDFs/Imuthane/Imuthane Low-free/TDS PHP-75D.pdf","sdsUrl":"https://coimus.sharepoint.com/sites/COIMUSAHUB/Safety Data Sheet/Finished Goods/Imuthane LF/SDS_Imuthane PHP-75D.PDF"},{"family":"Imuthane","productName":"IMUTHANE PHP-80D","shortName":"IMUTHANE PHP-80D","productType":"LOW FREE (LF)","shoreHardness":"80D","chemistry":"TDI Polyether","ncoRange":"10.6 – 11.4","viscosity":"600 – 900 at 70°C","potLife":"1.5 minutes","tdsUrl":"https://coimus.sharepoint.com/sites/TDS-TechnicalDataSheets/Shared Documents/PDFs/Imuthane/Imuthane Low-free/TDS PHP-80D.pdf","sdsUrl":"https://coimus.sharepoint.com/sites/COIMUSAHUB/Safety Data Sheet/Finished Goods/Imuthane LF/SDS_Imuthane PHP-80D.pdf"},{"family":"Imuthane","productName":"IMUTHANE PPT-80A","shortName":"IMUTHANE PPT-80A","productType":"LOW FREE (LF)","shoreHardness":"80A","chemistry":"TDI Polyether","ncoRange":"3.5 – 3.8","viscosity":"200 – 300 at 70°C","potLife":"30 minutes","tdsUrl":"https://coimus.sharepoint.com/sites/TDS-TechnicalDataSheets/Shared Documents/PDFs/Imuthane/Imuthane Low-free/TDS PPT-80A.pdf","sdsUrl":"https://coimus.sharepoint.com/sites/COIMUSAHUB/Safety Data Sheet/Finished Goods/Imuthane LF/SDS_Imuthane PPT-80A.PDF"},{"family":"Imuthane","productName":"IMUTHANE PPT-90A","shortName":"IMUTHANE PPT-90A","productType":"LOW FREE (LF)","shoreHardness":"90A","chemistry":"TDI Polyether","ncoRange":"4.6 – 5.0","viscosity":"250 – 450 at 70°C","potLife":"7 minutes","tdsUrl":"https://coimus.sharepoint.com/sites/TDS-TechnicalDataSheets/Shared Documents/PDFs/Imuthane/Imuthane Low-free/TDS PPT-90A.pdf","sdsUrl":"https://coimus.sharepoint.com/sites/COIMUSAHUB/Safety Data Sheet/Finished Goods/Imuthane LF/SDS_Imuthane PPT-90A.pdf"},{"family":"Imuthane","productName":"IMUTHANE PPT-95A","shortName":"IMUTHANE PPT-95A","productType":"LOW FREE (LF)","shoreHardness":"95A","chemistry":"TDI Polyether","ncoRange":"6.05 – 6.55","viscosity":"250 – 400 at 70°C","potLife":"10 minutes","tdsUrl":"https://coimus.sharepoint.com/sites/TDS-TechnicalDataSheets/Shared Documents/PDFs/Imuthane/Imuthane Low-free/TDS PPT-95A.pdf","sdsUrl":"https://coimus.sharepoint.com/sites/COIMUSAHUB/Safety Data Sheet/Finished Goods/Imuthane LF/SDS_Imuthane PPT-95A.pdf"},{"family":"Imuthane","productName":"IMUTHANE PPT-65D","shortName":"IMUTHANE PPT-65D","productType":"LOW FREE (LF)","shoreHardness":"65D","chemistry":"TDI Polyether","ncoRange":"7.45 – 7.85","viscosity":"400 – 700 at 70°C","potLife":"3.5 minutes","tdsUrl":"https://coimus.sharepoint.com/sites/TDS-TechnicalDataSheets/Shared Documents/PDFs/Imuthane/Imuthane Low-free/TDS PPT-65D.pdf","sdsUrl":"https://coimus.sharepoint.com/sites/COIMUSAHUB/Safety Data Sheet/Finished Goods/Imuthane LF/SDS_Imuthane PPT-65D.pdf"},{"family":"Imuthane","productName":"IMUTHANE PPT-75D","shortName":"IMUTHANE PPT-75D","productType":"LOW FREE (LF)","shoreHardness":"75D","chemistry":"TDI Polyether","ncoRange":"8.2 – 8.7","viscosity":"450 – 1,000 at 70°C","potLife":"3 minutes","tdsUrl":"https://coimus.sharepoint.com/sites/TDS-TechnicalDataSheets/Shared Documents/PDFs/Imuthane/Imuthane Low-free/TDS PPT-75D.pdf","sdsUrl":"https://coimus.sharepoint.com/sites/COIMUSAHUB/Safety Data Sheet/Finished Goods/Imuthane LF/SDS_Imuthane PPT-75D.pdf"},{"family":"Imuthane","productName":"IMUTHANE PEM-95A","shortName":"IMUTHANE PEM-95A","productType":"LOW FREE (LF)","shoreHardness":"95A (HQEE cure)","chemistry":"MDI Polyether","ncoRange":"4.7 – 5.2","viscosity":"900 – 1,200 at 70°C","potLife":"13 minutes","sdsUrl":"https://coimus.sharepoint.com/sites/COIMUSAHUB/Safety Data Sheet/Finished Goods/Imuthane LF/SDS_Imuthane PEM-95A.PDF"},{"family":"Imuthane","productName":"IMUTHANE APC-722","shortName":"IMUTHANE APC-722","productType":"LOW FREE (LF)","shoreHardness":"87A","chemistry":"IPDI Polyether-Aliphat ic","ncoRange":"5.35 – 5.80","viscosity":"500 – 1,000 at 70°C","potLife":"300 minutes","tdsUrl":"https://coimus.sharepoint.com/sites/TDS-TechnicalDataSheets/Shared Documents/PDFs/Imuthane/Imuthane Low-free/TDS APC-722.pdf","sdsUrl":"https://coimus.sharepoint.com/sites/COIMUSAHUB/Safety Data Sheet/Finished Goods/Imuthane LF/SDS_Imuthane APC-722.pdf"},{"family":"Imuthane","productName":"IMUTHANE APC-504","shortName":"IMUTHANE APC-504","productType":"LOW FREE (LF)","shoreHardness":"77D","chemistry":"IPDI Polyether-Aliphat ic","ncoRange":"7.6 – 8.1","viscosity":"2,100 – 3,400 at 60°C","potLife":"28 minutes","tdsUrl":"https://coimus.sharepoint.com/sites/TDS-TechnicalDataSheets/Shared Documents/PDFs/Imuthane/Imuthane Low-free/TDS APC-504.pdf","sdsUrl":"https://coimus.sharepoint.com/sites/COIMUSAHUB/Safety Data Sheet/Finished Goods/Imuthane LF/SDS_Imuthane APC-504.pdf"},{"family":"Imuthane","productName":"IMUTHANE PCL-77A","shortName":"IMUTHANE PCL-77A","productType":"LOW FREE (LF)","shoreHardness":"60A (MOCA cure)","chemistry":"Polycaprolactone Ester","ncoRange":"3.3 – 3.7","viscosity":"1,000 – 1,600 at 70°C","potLife":"15 – 18 minutes","tdsUrl":"https://coimus.sharepoint.com/sites/TDS-TechnicalDataSheets/Shared Documents/PDFs/Imuthane/Imuthane Low-free/TDS PCL-77A.pdf","sdsUrl":"https://coimus.sharepoint.com/sites/COIMUSAHUB/Safety Data Sheet/Finished Goods/Imuthane LF/SDS_Imuthane PCL-77A.PDF"},{"family":"Imuthane","productName":"IMUTHANE PRP-95A","shortName":"IMUTHANE PRP-95A","productType":"LOW FREE (LF)","shoreHardness":"97A","chemistry":"PPDI Polycarbonat e","ncoRange":"3.5 – 4.0","viscosity":"1,200 – 2,200 at 100°C","potLife":"3 minutes","tdsUrl":"https://coimus.sharepoint.com/sites/TDS-TechnicalDataSheets/Shared Documents/PDFs/Imuthane/Imuthane Low-free/TDS PRP-95A.pdf","sdsUrl":"https://coimus.sharepoint.com/sites/COIMUSAHUB/Safety Data Sheet/Finished Goods/Imuthane LF/SDS_Imuthane PRP-95A.PDF"},{"family":"Imuthane","productName":"IMUTHANE PEP-85A","shortName":"IMUTHANE PEP-85A","productType":"LOW FREE (LF)","shoreHardness":"88A","chemistry":"PPDI Polyether","ncoRange":"2.3 – 2.7","viscosity":"800 – 1,600 at 100°C","potLife":"4 minutes","tdsUrl":"https://coimus.sharepoint.com/sites/TDS-TechnicalDataSheets/Shared Documents/PDFs/Imuthane/Imuthane Low-free/TDS PEP-85A.pdf","sdsUrl":"https://coimus.sharepoint.com/sites/COIMUSAHUB/Safety Data Sheet/Finished Goods/Imuthane LF/SDS_Imuthane PEP-85A.PDF"},{"family":"Imuthane","productName":"IMUTHANE PEP-95A","shortName":"IMUTHANE PEP-95A","productType":"LOW FREE (LF)","shoreHardness":"97A","chemistry":"PPDI Polyether","ncoRange":"5.45 – 5.75","viscosity":"500 – 1,000 at 70°C","potLife":"4 minutes","tdsUrl":"https://coimus.sharepoint.com/sites/TDS-TechnicalDataSheets/Shared Documents/PDFs/Imuthane/Imuthane Low-free/TDS PEP-95A.pdf","sdsUrl":"https://coimus.sharepoint.com/sites/COIMUSAHUB/Safety Data Sheet/Finished Goods/Imuthane LF/SDS_Imuthane PEP-95A.PDF"},{"family":"Imuthane","productName":"VERSATHANE A-8","shortName":"VERSATHANE A-8","productType":"80A","shoreHardness":"TDI Polyester","chemistry":"2.9 – 3.3","ncoRange":"3,000 – 3,950 at 70°C","viscosity":"11 minutes","potLife":"https://coimus.sharepoint.com/sites/TDS-TechnicalDataSheets/Shared Documents/PDFs/Imuthane/Vesathane/TDS A-8.pdf"},{"family":"Imuthane","productName":"VERSATHANE A-85QM","shortName":"VERSATHANE A-85QM","productType":"VERSATHANE","shoreHardness":"85A","chemistry":"TDI Polyester","ncoRange":"3.45 – 3.75","viscosity":"3,500 – 4,800 at 70°C","potLife":"9 minutes","tdsUrl":"https://coimus.sharepoint.com/sites/TDS-TechnicalDataSheets/Shared Documents/PDFs/Imuthane/Vesathane/TDS A-85QM.pdf"},{"family":"Imuthane","productName":"VERSATHANE  A-9","shortName":"VERSATHANE  A-9","productType":"VERSATHANE","shoreHardness":"90A","chemistry":"TDI Polyester","ncoRange":"4.1 – 4.5","viscosity":"2,500 – 3,500 at 70°C","potLife":"7 minutes","tdsUrl":"https://coimus.sharepoint.com/sites/TDS-TechnicalDataSheets/Shared Documents/PDFs/Imuthane/Vesathane/TDS A-9.pdf"},{"family":"Imuthane","productName":"IMUTHANE PST-75A-X","shortName":"IMUTHANE PST-75A-X","productType":"LOW FREE (LF)","shoreHardness":"75A","chemistry":"TDI Polyester","ncoRange":"2.7 – 3.1","viscosity":"2,700 – 3,500 at 70°C","potLife":"11 minutes","tdsUrl":"https://coimus.sharepoint.com/sites/TDS-TechnicalDataSheets/Shared Documents/PDFs/Imuthane/Imuthane Low-free/TDS PST-75A-X.pdf","sdsUrl":"https://coimus.sharepoint.com/sites/COIMUSAHUB/Safety Data Sheet/Finished Goods/Imuthane LF/SDS_Imuthane PST-75A-X.PDF"},{"family":"Imuthane","productName":"VERSATHANE A-8-X","shortName":"VERSATHANE A-8-X","productType":"ABRASION RESISTANT (X)","shoreHardness":"80A","chemistry":"TDI Polyester","ncoRange":"2.9 – 3.3","viscosity":"3,000 – 3,950 at 70°C","potLife":"11 minutes","tdsUrl":"https://coimus.sharepoint.com/sites/TDS-TechnicalDataSheets/Shared Documents/PDFs/Imuthane/Vesathane/TDS A-8-X.pdf"},{"family":"Imuthane","productName":"IMUTHANE 18-85A-X","shortName":"IMUTHANE 18-85A-X","productType":"ABRASION RESISTANT (X)","shoreHardness":"85A","chemistry":"MDI Polyester","ncoRange":"6.5 – 6.9","viscosity":"400 – 1,000 at 100°C","potLife":"8 minutes","sdsUrl":"https://coimus.sharepoint.com/sites/COIMUSAHUB/Safety Data Sheet/Finished Goods/Imuthane-Conv/SDS_Imuthane 18-85A-X.PDF"},{"family":"Imuthane","productName":"IMUTHANE PST-85A-X","shortName":"IMUTHANE PST-85A-X","productType":"ABRASION RESISTANT (X)","shoreHardness":"85A","chemistry":"TDI Polyester","ncoRange":"3.5 – 3.8","viscosity":"1,800 – 2,500 at 70°C","potLife":"8 minutes","tdsUrl":"https://coimus.sharepoint.com/sites/TDS-TechnicalDataSheets/Shared Documents/PDFs/Imuthane/Imuthane Low-free/TDS PST-85A-X.pdf","sdsUrl":"https://coimus.sharepoint.com/sites/COIMUSAHUB/Safety Data Sheet/Finished Goods/Imuthane LF/SDS_Imuthane PST-85A-X.PDF"},{"family":"Imuthane","productName":"IMUTHANE PST-95A-X","shortName":"IMUTHANE PST-95A-X","productType":"ABRASION RESISTANT (X)","shoreHardness":"95A","chemistry":"TDI Polyester","ncoRange":"4.8 – 5.3","viscosity":"1,500 – 2,000 at 70°C","potLife":"4 minutes","tdsUrl":"https://coimus.sharepoint.com/sites/TDS-TechnicalDataSheets/Shared Documents/PDFs/Imuthane/Imuthane Low-free/TDS PST-95A-X.pdf","sdsUrl":"https://coimus.sharepoint.com/sites/COIMUSAHUB/Safety Data Sheet/Finished Goods/Imuthane LF/SDS_Imuthane PST-95A-X.PDF"},{"family":"Blocked Imuthane","productName":"IMUTHANE BPM-93A","shortName":"IMUTHANE BPM-93A","chemistry":"MDI Polyether","blockedNco":"<0.25%","unblockedNco":"3.4 - 3.8","viscosity":"1,200 – 2,000 at 100°C","tdsUrl":"https://coimus.sharepoint.com/sites/TDS-TechnicalDataSheets/Shared Documents/PDFs/Imuthane/Blocked Prepolymers/TDS BPM-93A.pdf","sdsUrl":"https://coimus.sharepoint.com/sites/COIMUSAHUB/Safety Data Sheet/Finished Goods/Imuthane LF/SDS_Imuthane BPM-93A.PDF"},{"family":"Blocked Imuthane","productName":"IMUTHANE BPT-95A","shortName":"IMUTHANE BPT-95A","chemistry":"TDI Polyether","blockedNco":"<0.25%","unblockedNco":"5.3 - 5.8","viscosity":"7,500 – 15,000 at 50°C","tdsUrl":"https://coimus.sharepoint.com/sites/TDS-TechnicalDataSheets/Shared Documents/PDFs/Imuthane/Blocked Prepolymers/TDS BPT-60D.pdf","sdsUrl":"https://coimus.sharepoint.com/sites/COIMUSAHUB/Safety Data Sheet/Finished Goods/Imuthane-Conv/SDS_Imuthane BPT-60D.pdf"},{"family":"Blocked Imuthane","productName":"IMUTHANE BPT-60D","shortName":"IMUTHANE BPT-60D","chemistry":"TDI Polyether","blockedNco":"<0.25%","unblockedNco":"6.1 - 6.5","viscosity":"1,200 – 1,800 at 50°C","tdsUrl":"https://coimus.sharepoint.com/sites/TDS-TechnicalDataSheets/Shared Documents/PDFs/Imuthane/Blocked Prepolymers/TDS BPT-72D.pdf","sdsUrl":"https://coimus.sharepoint.com/sites/COIMUSAHUB/Safety Data Sheet/Finished Goods/Imuthane-Conv/SDS_Imuthane BPT-72D.PDF"},{"family":"Blocked Imuthane","productName":"IMUTHANE BPT-72D","shortName":"IMUTHANE BPT-72D","chemistry":"TDI Polyether","blockedNco":"<0.25%","unblockedNco":"6.75 - 7.20","viscosity":"350 – 850 at 70°C","tdsUrl":"https://coimus.sharepoint.com/sites/TDS-TechnicalDataSheets/Shared Documents/PDFs/Imuthane/Blocked Prepolymers/TDS BPT-95A.pdf","sdsUrl":"https://coimus.sharepoint.com/sites/COIMUSAHUB/Safety Data Sheet/Finished Goods/Imuthane-Conv/SDS_Imuthane BPT-95A.pdf"},{"family":"Imuthane Systems","productName":"18-95A + GC-192 + GR-45","shortName":"18-95A + GC-192 + GR-45","description":"MDI Polyester 3-component system","shoreHardness":"55A – 95A","potLife":"5 minutes","tdsUrl":"https://coimus.sharepoint.com/sites/TDS-TechnicalDataSheets/Shared Documents/PDFs/Imuthane/Systems + 3k system/TDS 18-95A GC-192 GR-45.pdf"},{"family":"Imuthane Systems","productName":"IMUCAST CR-65A + IMUCAST CR-65B","shortName":"IMUCAST CR-65A + IMUCAST CR-65B","description":"Natural rubber replacement","shoreHardness":"65A","potLife":"4 minutes"},{"family":"Imuthane Systems","productName":"IMUCAST HT-75A + IMUCAST HT-75B","shortName":"IMUCAST HT-75A + IMUCAST HT-75B","description":"Hydrogentated Nitrile Butadiene Rubber (HNBR) replacement","shoreHardness":"75A","potLife":"8 - 10 minutes"},{"family":"Imuthane Systems","productName":"IMUCAST 100 + IMUCURE B100","shortName":"IMUCAST 100 + IMUCURE B100","description":"Conventional, high-hardness ether system","shoreHardness":"77D","potLife":"6 minutes","tdsUrl":"https://coimus.sharepoint.com/sites/TDS-TechnicalDataSheets/Shared Documents/PDFs/Imuthane/Systems + 3k system/TDS Imucast 100 System.pdf"},{"family":"Imuthane Additives","productName":"IMUSTAT AS-201","shortName":"IMUSTAT AS-201","description":"Anti-static Additive","ohNumber":"66 - 74","potLife":"200 – 300 at 25°C","tdsUrl":"https://coimus.sharepoint.com/sites/TDS-TechnicalDataSheets/Shared Documents/PDFs/Imuthane/Misc/TDS Imustat AS-201.pdf","sdsUrl":"https://coimus.sharepoint.com/sites/COIMUSAHUB/Safety Data Sheet/Finished Goods/Imustat/SDS_Imustat AS-101.pdf"},{"family":"Imuthane Additives","productName":"IMUCIZER 342 LM","shortName":"IMUCIZER 342 LM","description":"Plasticizer","ohNumber":"5 - 8","potLife":"90 - 150 at 25°C","tdsUrl":"https://coimus.sharepoint.com/sites/TDS-TechnicalDataSheets/Shared Documents/PDFs/Imuthane/Misc/TDS Imucuzer 342 LM.pdf","sdsUrl":"https://coimus.sharepoint.com/sites/COIMUSAHUB/Safety Data Sheet/Finished Goods/Imustat/SDS_Imustat AS-201.pdf"},{"family":"Imucure","productName":"IMUCURE BT-60","shortName":"IMUCURE BT-60","chemistry":"BDO Blend","viscosity":"25 at 25°C","equivalentWeight":"45","meltingPoint":"N/A","tdsUrl":"https://coimus.sharepoint.com/sites/TDS-TechnicalDataSheets/Shared Documents/PDFs/Imuthane/Curatives/TDS Imucure BT-60.pdf","sdsUrl":"https://coimus.sharepoint.com/sites/COIMUSAHUB/Safety Data Sheet/Finished Goods/Imucure/SDS_Imucure BT-60.PDF"},{"family":"Imucure","productName":"IMUCURE BT-94","shortName":"IMUCURE BT-94","chemistry":"BDO Blend","viscosity":"25 at 25°C","equivalentWeight":"45","meltingPoint":"N/A","tdsUrl":"https://coimus.sharepoint.com/sites/TDS-TechnicalDataSheets/Shared Documents/PDFs/Imuthane/Curatives/TDS Imucure BT-94.pdf","sdsUrl":"https://coimus.sharepoint.com/sites/COIMUSAHUB/Safety Data Sheet/Finished Goods/Imucure/SDS_Imucure BT-94.pdf"},{"family":"Imucure","productName":"IMUCURE GC-192","shortName":"IMUCURE GC-192","chemistry":"Polyester","viscosity":"1,250 at 60°C","equivalentWeight":"967 – 1,078","meltingPoint":"N/A","tdsUrl":"https://coimus.sharepoint.com/sites/TDS-TechnicalDataSheets/Shared Documents/PDFs/Imuthane/Curatives/TDS Imucure GC-192.pdf","sdsUrl":"https://coimus.sharepoint.com/sites/COIMUSAHUB/Safety Data Sheet/Finished Goods/Imucure/SDS_Imucure GC-192.pdf"},{"family":"Imucure","productName":"IMUCURE GR-189","shortName":"IMUCURE GR-189","chemistry":"MCDEA","equivalentWeight":"189","meltingPoint":"88 – 92°C","tdsUrl":"https://coimus.sharepoint.com/sites/TDS-TechnicalDataSheets/Shared Documents/PDFs/Imuthane/Curatives/TDS Imucure GR-189.pdf","sdsUrl":"https://coimus.sharepoint.com/sites/COIMUSAHUB/Safety Data Sheet/Finished Goods/Imucure/SDS_Imucure GR-189.pdf"},{"family":"Imucure","productName":"IMUCURE GR-45","shortName":"IMUCURE GR-45","chemistry":"1,4 – BDO","viscosity":"85 at 20°C","equivalentWeight":"45","meltingPoint":"19 – 21°C","tdsUrl":"https://coimus.sharepoint.com/sites/TDS-TechnicalDataSheets/Shared Documents/PDFs/Imuthane/Curatives/TDS Imucure GR-45.pdf","sdsUrl":"https://coimus.sharepoint.com/sites/COIMUSAHUB/Safety Data Sheet/Finished Goods/Imucure/SDS_Imucure GR-45.pdf"},{"family":"Imucure","productName":"IMUCURE GRE-1000","shortName":"IMUCURE GRE-1000","chemistry":"PTMG (2000mw)","viscosity":"900 – 1,500 at 40°C","equivalentWeight":"950 – 1,050","meltingPoint":"N/A","tdsUrl":"https://coimus.sharepoint.com/sites/TDS-TechnicalDataSheets/Shared Documents/PDFs/Imuthane/Curatives/TDS Imucure GRE-1000.pdf","sdsUrl":"https://coimus.sharepoint.com/sites/COIMUSAHUB/Safety Data Sheet/Finished Goods/Imucure/SDS_Imucure GRE-1000.pdf"},{"family":"Imucure","productName":"IMUCURE GRE-500","shortName":"IMUCURE GRE-500","chemistry":"PTMG (1000mw)","viscosity":"260 – 320 at 40°C","equivalentWeight":"475 – 525","meltingPoint":"N/A","tdsUrl":"https://coimus.sharepoint.com/sites/TDS-TechnicalDataSheets/Shared Documents/PDFs/Imuthane/Curatives/TDS Imucure GRE-500.pdf","sdsUrl":"https://coimus.sharepoint.com/sites/COIMUSAHUB/Safety Data Sheet/Finished Goods/Imucure/SDS_Imucure GRE-500.pdf"},{"family":"Imucure","productName":"IMUCURE GS440-500","shortName":"IMUCURE GS440-500","chemistry":"Polyester","viscosity":"350 at 60°C","equivalentWeight":"488 – 514","meltingPoint":"N/A","tdsUrl":"https://coimus.sharepoint.com/sites/TDS-TechnicalDataSheets/Shared Documents/PDFs/Imuthane/Curatives/TDS Imucure GS440-500.pdf","sdsUrl":"https://coimus.sharepoint.com/sites/COIMUSAHUB/Safety Data Sheet/Finished Goods/Imucure/SDS_Imucure GS440-500.pdf"},{"family":"Diexter Specialty","productName":"DIEXTER 1100-225","shortName":"DIEXTER 1100-225","description":"Color Diluent","ohNumber":"220 – 230","acidNumber":"0.5","aphaMax":"150","functionality":"2","viscosity":"500 at 25°C","phase":"Liquid","tdsUrl":"https://coimus.sharepoint.com/sites/TDS-TechnicalDataSheets/Shared Documents/PDFs/Diexter-G/TDS_ Diexter-G 1100-225 2024-11.pdf","sdsUrl":"https://coimus.sharepoint.com/sites/COIMUSAHUB/Safety Data Sheet/Finished Goods/Diexter/SDS_Diexter-G 1100-225.PDF"},{"family":"Diexter Specialty","productName":"DIEXTER 156T-63","shortName":"DIEXTER 156T-63","description":"Adhesion Promoter","ohNumber":"61 – 66","acidNumber":"0.5","aphaMax":"150","functionality":"2.1","viscosity":"8,300 at 25°C","phase":"Liquid","tdsUrl":"https://coimus.sharepoint.com/sites/TDS-TechnicalDataSheets/Shared Documents/PDFs/Diexter-G/TDS_ Diexter-G 156T-63 2024-11.pdf","sdsUrl":"https://coimus.sharepoint.com/sites/COIMUSAHUB/Safety Data Sheet/Finished Goods/Diexter/SDS_Diexter-G 156T-63.pdf"},{"family":"Diexter Specialty","productName":"DIEXTER WD-65A58","shortName":"DIEXTER WD-65A58","description":"Water Reducible","ohNumber":"62 – 70","acidNumber":"60","aphaMax":"250","functionality":"1.8","viscosity":"3,500 at 60°C","phase":"Solid","tdsUrl":"https://coimus.sharepoint.com/sites/TDS-TechnicalDataSheets/Shared Documents/PDFs/Diexter-G/TDS_ Diexter-G WD-65A58 2024-11.pdf","sdsUrl":"https://coimus.sharepoint.com/sites/COIMUSAHUB/Safety Data Sheet/Finished Goods/Diexter/SDS_Diexter-G WD-65A58.pdf"},{"family":"Diexter","productName":"DIEXTER G-1100-45","shortName":"DIEXTER G-1100-45","productType":"LINEAR ADIPATE GLYCOL","ohNumber":"43.0-47.0","avgMolWeight":"2500","acidNumber":"0.5","functionality":"2","viscosity":"12400 at 25°C","phase":"LIQUID","glycols":"DEG","tdsUrl":"https://coimus.sharepoint.com/sites/TDS-TechnicalDataSheets/Shared Documents/PDFs/Diexter-G/TDS_ Diexter-G 1100-45 2024-11.pdf","sdsUrl":"https://coimus.sharepoint.com/sites/COIMUSAHUB/Safety Data Sheet/Finished Goods/Diexter/SDS_Diexter-G 1100-45.pdf"},{"family":"Diexter","productName":"DIEXTER G- 1100-56","shortName":"DIEXTER G- 1100-56","productType":"LINEAR ADIPATE GLYCOL","ohNumber":"54.0-58.0","avgMolWeight":"2000","acidNumber":"0.5","functionality":"2","viscosity":"7700 at 25°C","phase":"LIQUID","glycols":"DEG","sdsUrl":"https://coimus.sharepoint.com/sites/COIMUSAHUB/Safety Data Sheet/Finished Goods/Diexter/SDS_Diexter-G 1100-56.pdf"},{"family":"Diexter","productName":"DIEXTER G- 1100-112","shortName":"DIEXTER G- 1100-112","productType":"LINEAR ADIPATE GLYCOL","ohNumber":"109.0-115.0","avgMolWeight":"1000","acidNumber":"0.5","functionality":"2","viscosity":"2000 at 25°C","phase":"LIQUID","glycols":"DEG","sdsUrl":"https://coimus.sharepoint.com/sites/COIMUSAHUB/Safety Data Sheet/Finished Goods/Diexter/SDS_Diexter-G 1100-112.pdf"},{"family":"Diexter","productName":"DIEXTER G- 1100-225","shortName":"DIEXTER G- 1100-225","productType":"LINEAR ADIPATE GLYCOL","ohNumber":"220.0-230.0","avgMolWeight":"500","acidNumber":"0.5","functionality":"2","viscosity":"2000 at 60°C","phase":"LIQUID","glycols":"DEG","tdsUrl":"https://coimus.sharepoint.com/sites/TDS-TechnicalDataSheets/Shared Documents/PDFs/Diexter-G/TDS_ Diexter-G 1100-225 2024-11.pdf","sdsUrl":"https://coimus.sharepoint.com/sites/COIMUSAHUB/Safety Data Sheet/Finished Goods/Diexter/SDS_Diexter-G 1100-225.PDF"},{"family":"Diexter","productName":"DIEXTER G- 2200-35U","shortName":"DIEXTER G- 2200-35U","productType":"LINEAR ADIPATE GLYCOL","ohNumber":"33.0-37.0","avgMolWeight":"3200","acidNumber":"0.5","functionality":"2","viscosity":"3500 at 60°C","phase":"SOLID","glycols":"EG","sdsUrl":"https://coimus.sharepoint.com/sites/COIMUSAHUB/Safety Data Sheet/Finished Goods/Diexter/SDS_Diexter-G 2200-35U.pdf"},{"family":"Diexter","productName":"DIEXTER G- 2200-57U","shortName":"DIEXTER G- 2200-57U","productType":"LINEAR ADIPATE GLYCOL","ohNumber":"53.0-59.0","avgMolWeight":"2000","acidNumber":"0.5","functionality":"2","viscosity":"1300 at 60°C","phase":"SOLID","glycols":"EG","tdsUrl":"https://coimus.sharepoint.com/sites/TDS-TechnicalDataSheets/Shared Documents/PDFs/Diexter-G/TDS_ Diexter-G 2200-57U 2024-11.pdf","sdsUrl":"https://coimus.sharepoint.com/sites/COIMUSAHUB/Safety Data Sheet/Finished Goods/Diexter/SDS_Diexter-G 2200-57U (Experimental).PDF"},{"family":"Diexter","productName":"DIEXTER G- 2200-205U","shortName":"DIEXTER G- 2200-205U","productType":"LINEAR ADIPATE GLYCOL","ohNumber":"195.0-214.0","avgMolWeight":"500","acidNumber":"0.5","functionality":"2","viscosity":"2000 at 60°C","phase":"SOLID","glycols":"EG","sdsUrl":"https://coimus.sharepoint.com/sites/COIMUSAHUB/Safety Data Sheet/Finished Goods/Diexter/SDS_Diexter-G 2200-205U.pdf"},{"family":"Diexter","productName":"DIEXTER G- 3300-35","shortName":"DIEXTER G- 3300-35","productType":"LINEAR ADIPATE GLYCOL","ohNumber":"33.0-39.0","avgMolWeight":"2500","acidNumber":"1","functionality":"2","viscosity":"12000 at 25°C","phase":"LIQUID","glycols":"PG"},{"family":"Diexter","productName":"DIEXTER G- 3300-65","shortName":"DIEXTER G- 3300-65","productType":"LINEAR ADIPATE GLYCOL","ohNumber":"62.0-68.0","avgMolWeight":"1700","acidNumber":"1","functionality":"2","viscosity":"9000 at 25°C","phase":"LIQUID","glycols":"PG","tdsUrl":"https://coimus.sharepoint.com/sites/TDS-TechnicalDataSheets/Shared Documents/PDFs/Diexter-G/TDS_ Diexter-G 3300-65 2024-11.pdf","sdsUrl":"https://coimus.sharepoint.com/sites/COIMUSAHUB/Safety Data Sheet/Finished Goods/Diexter/SDS_Diexter-G 3300-65.pdf"},{"family":"Diexter","productName":"DIEXTER G- 4400-45","shortName":"DIEXTER G- 4400-45","productType":"LINEAR ADIPATE GLYCOL","ohNumber":"43.0-47.0","avgMolWeight":"2500","acidNumber":"0.5","functionality":"2","viscosity":"12000 at 60°C","phase":"SOLID","glycols":"BDO","sdsUrl":"https://coimus.sharepoint.com/sites/COIMUSAHUB/Safety Data Sheet/Finished Goods/Diexter/SDS_Diexter-G 4400-45.pdf"},{"family":"Diexter","productName":"DIEXTER G- 4400-57","shortName":"DIEXTER G- 4400-57","productType":"LINEAR ADIPATE GLYCOL","ohNumber":"54.0-58.0","avgMolWeight":"2000","acidNumber":"0.5","functionality":"2","viscosity":"1400 at 60°C","phase":"SOLID","glycols":"BDO","tdsUrl":"https://coimus.sharepoint.com/sites/TDS-TechnicalDataSheets/Shared Documents/PDFs/Diexter-G/TDS_ Diexter-G 4400-57 2024-11.pdf","sdsUrl":"https://coimus.sharepoint.com/sites/COIMUSAHUB/Safety Data Sheet/Finished Goods/Diexter/Italian/SDS_Diexter-G 4400-57 _Italian.pdf"},{"family":"Diexter","productName":"DIEXTER G- 4400-70","shortName":"DIEXTER G- 4400-70","productType":"LINEAR ADIPATE GLYCOL","ohNumber":"67.0-73.0","avgMolWeight":"1600","acidNumber":"0.5","functionality":"2","viscosity":"1000 at 60°C","phase":"SOLID","glycols":"BDO","tdsUrl":"https://coimus.sharepoint.com/sites/TDS-TechnicalDataSheets/Shared Documents/PDFs/Diexter-G/TDS_ Diexter-G 4400-70 2024-11.pdf","sdsUrl":"https://coimus.sharepoint.com/sites/COIMUSAHUB/Safety Data Sheet/Finished Goods/Diexter/SDS_Diexter-G 4400-70.pdf"},{"family":"Diexter","productName":"DIEXTER G- 4400-112U","shortName":"DIEXTER G- 4400-112U","productType":"LINEAR ADIPATE GLYCOL","ohNumber":"109.0-115.0","avgMolWeight":"1000","acidNumber":"0.5","functionality":"2","viscosity":"360 at 60°C","phase":"SOLID","glycols":"BDO","tdsUrl":"https://coimus.sharepoint.com/sites/TDS-TechnicalDataSheets/Shared Documents/PDFs/Diexter-G/TDS_ Diexter-G 4400-112U (Rev. 1).pdf","sdsUrl":"https://coimus.sharepoint.com/sites/COIMUSAHUB/Safety Data Sheet/Finished Goods/Diexter/SDS_Diexter-G 4400-112U.PDF"},{"family":"Diexter","productName":"DIEXTER G- 4400-113","shortName":"DIEXTER G- 4400-113","productType":"LINEAR ADIPATE GLYCOL","ohNumber":"109.0-117.0","avgMolWeight":"1000","acidNumber":"0.5","functionality":"2","viscosity":"364 at 60°C","phase":"SOLID","glycols":"BDO","tdsUrl":"https://coimus.sharepoint.com/sites/TDS-TechnicalDataSheets/Shared Documents/PDFs/Diexter-G/TDS_ Diexter-G 4400-113 2025-01.pdf","sdsUrl":"https://coimus.sharepoint.com/sites/COIMUSAHUB/Safety Data Sheet/Finished Goods/Diexter/SDS_Diexter-G 4400-113 B.pdf"},{"family":"Diexter","productName":"DIEXTER G- 4400-160","shortName":"DIEXTER G- 4400-160","productType":"LINEAR ADIPATE GLYCOL","ohNumber":"155.0-165.0","avgMolWeight":"700","acidNumber":"0.5","functionality":"2","viscosity":"200 at 60°C","phase":"SOLID","glycols":"BDO","tdsUrl":"https://coimus.sharepoint.com/sites/TDS-TechnicalDataSheets/Shared Documents/PDFs/Diexter-G/TDS_ Diexter-G 4400-160 2024-11.pdf","sdsUrl":"https://coimus.sharepoint.com/sites/COIMUSAHUB/Safety Data Sheet/Finished Goods/Diexter/SDS_Diexter-G 4400-160 BMB.PDF"},{"family":"Diexter","productName":"DIEXTER G- 5500-56","shortName":"DIEXTER G- 5500-56","productType":"LINEAR ADIPATE GLYCOL","ohNumber":"54.0-59.0","avgMolWeight":"2000","acidNumber":"0.5","functionality":"2","viscosity":"8800 at 40°C","phase":"SOLID","glycols":"NPG","tdsUrl":"https://coimus.sharepoint.com/sites/TDS-TechnicalDataSheets/Shared Documents/PDFs/Diexter-G/TDS_ Diexter-G 5500-56 2024-11.pdf","sdsUrl":"https://coimus.sharepoint.com/sites/COIMUSAHUB/Safety Data Sheet/Finished Goods/Diexter/SDS_Diexter-G 5500-56.pdf"},{"family":"Diexter","productName":"DIEXTER G- 5500-112","shortName":"DIEXTER G- 5500-112","productType":"LINEAR ADIPATE GLYCOL","ohNumber":"109.0-115.0","avgMolWeight":"1000","acidNumber":"0.5","functionality":"2","viscosity":"2200 at 40°C","phase":"LIQUID","glycols":"NPG","sdsUrl":"https://coimus.sharepoint.com/sites/COIMUSAHUB/Safety Data Sheet/Finished Goods/Diexter/SDS_Diexter-G 5500-112.pdf"},{"family":"Diexter","productName":"DIEXTER G- 5500-225","shortName":"DIEXTER G- 5500-225","productType":"LINEAR ADIPATE GLYCOL","ohNumber":"220.0-230.0","avgMolWeight":"500","acidNumber":"1","functionality":"2","viscosity":"2200 at 25°C","phase":"LIQUID","glycols":"NPG","sdsUrl":"https://coimus.sharepoint.com/sites/COIMUSAHUB/Safety Data Sheet/Finished Goods/Diexter/SDS_Diexter-G 5500-225.pdf"},{"family":"Diexter","productName":"DIEXTER G- 6600-112","shortName":"DIEXTER G- 6600-112","productType":"LINEAR ADIPATE GLYCOL","ohNumber":"108.0-116.0","avgMolWeight":"1000","acidNumber":"1","functionality":"2","viscosity":"49000 at 60°C","phase":"SOLID","glycols":"HDO","tdsUrl":"https://coimus.sharepoint.com/sites/TDS-TechnicalDataSheets/Shared Documents/PDFs/Diexter-G/TDS_ Diexter-G 6600-112 (Rev.1).pdf","sdsUrl":"https://coimus.sharepoint.com/sites/COIMUSAHUB/Safety Data Sheet/Finished Goods/Diexter/SDS_Diexter-G 6600-112.pdf"},{"family":"Diexter","productName":"DIEXTER G- 6600-80","shortName":"DIEXTER G- 6600-80","productType":"LINEAR ADIPATE GLYCOL","ohNumber":"80.0-82.0","avgMolWeight":"1600","acidNumber":"1","functionality":"2","viscosity":"4200 at 60°C","phase":"SOLID","glycols":"HDO"},{"family":"Diexter","productName":"DIEXTER G- 6600-35","shortName":"DIEXTER G- 6600-35","productType":"LINEAR ADIPATE GLYCOL","ohNumber":"33.0-37.0","avgMolWeight":"3200","acidNumber":"0.5","functionality":"2","viscosity":"5500 at 60°C","phase":"SOLID","glycols":"HDO","tdsUrl":"https://coimus.sharepoint.com/sites/TDS-TechnicalDataSheets/Shared Documents/PDFs/Diexter-G/TDS_ Diexter-G 6600-35 2024-11.pdf","sdsUrl":"https://coimus.sharepoint.com/sites/COIMUSAHUB/Safety Data Sheet/Finished Goods/Diexter/SDS_Diexter-G 6600-35.pdf"},{"family":"Diexter","productName":"DIEXTER G- 6600-45","shortName":"DIEXTER G- 6600-45","productType":"LINEAR ADIPATE GLYCOL","ohNumber":"43.0-47.0","avgMolWeight":"2500","acidNumber":"0.5","functionality":"2","viscosity":"5500 at 60°C","phase":"SOLID","glycols":"HDO"},{"family":"Diexter","productName":"DIEXTER G- 6600-57","shortName":"DIEXTER G- 6600-57","productType":"LINEAR ADIPATE GLYCOL","ohNumber":"53.0-59.0","avgMolWeight":"2000","acidNumber":"0.5","functionality":"2","viscosity":"1300 at 60°C","phase":"SOLID","glycols":"HDO"},{"family":"Diexter","productName":"DIEXTER G- 6600-112","shortName":"DIEXTER G- 6600-112","productType":"LINEAR ADIPATE GLYCOL","ohNumber":"108.0-116.0","avgMolWeight":"1000","acidNumber":"0.5","functionality":"2","viscosity":"400 at 60°C","phase":"SOLID","glycols":"HDO","tdsUrl":"https://coimus.sharepoint.com/sites/TDS-TechnicalDataSheets/Shared Documents/PDFs/Diexter-G/TDS_ Diexter-G 6600-112 (Rev.1).pdf","sdsUrl":"https://coimus.sharepoint.com/sites/COIMUSAHUB/Safety Data Sheet/Finished Goods/Diexter/SDS_Diexter-G 6600-112.pdf"},{"family":"Diexter","productName":"DIEXTER G- 2150-37","shortName":"DIEXTER G- 2150-37","productType":"LINEAR-MIXED GLYCOL ADIPATE POLYOL","ohNumber":"35.0-39.0","avgMolWeight":"3000","acidNumber":"0.5","functionality":"2","viscosity":"7500 at 40°C","phase":"LIQUID","glycols":"EG/DEG","sdsUrl":"https://coimus.sharepoint.com/sites/COIMUSAHUB/Safety Data Sheet/Finished Goods/Diexter/SDS_Diexter-G 2150-37.pdf"},{"family":"Diexter","productName":"DIEXTER G- 2150-56","shortName":"DIEXTER G- 2150-56","productType":"LINEAR-MIXED GLYCOL ADIPATE POLYOL","ohNumber":"53.0-57.9","avgMolWeight":"2000","acidNumber":"0.5","functionality":"2","viscosity":"3000 at 40°C","phase":"LIQUID","glycols":"EG/DEG","sdsUrl":"https://coimus.sharepoint.com/sites/COIMUSAHUB/Safety Data Sheet/Finished Goods/Diexter/SDS_Diexter-G 2150-56.pdf"},{"family":"Diexter","productName":"DIEXTER G- 2370-45","shortName":"DIEXTER G- 2370-45","productType":"LINEAR-MIXED GLYCOL ADIPATE POLYOL","ohNumber":"43.0-47.0","avgMolWeight":"2500","acidNumber":"1","functionality":"2","viscosity":"6000 at 40°C","phase":"SOLID","glycols":"EG/PG","tdsUrl":"https://coimus.sharepoint.com/sites/TDS-TechnicalDataSheets/Shared Documents/PDFs/Diexter-G/TDS_ Diexter-G 2370-45 2024-11.pdf","sdsUrl":"https://coimus.sharepoint.com/sites/COIMUSAHUB/Safety Data Sheet/Finished Goods/Diexter/SDS_Diexter-G 2370-45.pdf"},{"family":"Diexter","productName":"DIEXTER G- 2450-54U","shortName":"DIEXTER G- 2450-54U","productType":"LINEAR-MIXED GLYCOL ADIPATE POLYOL","ohNumber":"53.0-57.9","avgMolWeight":"2000","acidNumber":"0.5","functionality":"2","viscosity":"4000 at 40°C","phase":"SOLID","glycols":"EG/BDO"},{"family":"Diexter","productName":"DIEXTER G- 2460-56U","shortName":"DIEXTER G- 2460-56U","productType":"LINEAR-MIXED GLYCOL ADIPATE POLYOL","ohNumber":"54.0-58.0","avgMolWeight":"2000","acidNumber":"0.5","functionality":"2","viscosity":"4000 at 40°C","phase":"SOLID","glycols":"EG/BDO","sdsUrl":"https://coimus.sharepoint.com/sites/COIMUSAHUB/Safety Data Sheet/Finished Goods/Diexter/SDS_Diexter-G 2460-56U.pdf"},{"family":"Diexter","productName":"DIEXTER G- 2470-54U","shortName":"DIEXTER G- 2470-54U","productType":"LINEAR-MIXED GLYCOL ADIPATE POLYOL","ohNumber":"53.0-59.0","avgMolWeight":"2000","acidNumber":"0.5","functionality":"2","viscosity":"4000 at 40°C","phase":"SOLID","glycols":"EG/BDO"},{"family":"Diexter","productName":"DIEXTER G- 4555-37","shortName":"DIEXTER G- 4555-37","productType":"LINEAR-MIXED GLYCOL ADIPATE POLYOL","ohNumber":"35.0-39.0","avgMolWeight":"3000","acidNumber":"0.5","functionality":"2","viscosity":"7500 at 40°C","phase":"LIQUID","glycols":"BGO/NPG","tdsUrl":"https://coimus.sharepoint.com/sites/TDS-TechnicalDataSheets/Shared Documents/PDFs/Diexter-G/TDS_ Diexter-G 4555-37 2024-11.pdf","sdsUrl":"https://coimus.sharepoint.com/sites/COIMUSAHUB/Safety Data Sheet/Finished Goods/Diexter/SDS_Diexter-G 4555-37.pdf"},{"family":"Diexter","productName":"DIEXTER G- 4555-56","shortName":"DIEXTER G- 4555-56","productType":"LINEAR-MIXED GLYCOL ADIPATE POLYOL","ohNumber":"53.0-59.0","avgMolWeight":"2000","acidNumber":"0.5","functionality":"2","viscosity":"13000 at 25°C","phase":"LIQUID","glycols":"BGO/NPG","tdsUrl":"https://coimus.sharepoint.com/sites/TDS-TechnicalDataSheets/Shared Documents/PDFs/Diexter-G/TDS_ Diexter-G 4555-56 2024-11.pdf","sdsUrl":"https://coimus.sharepoint.com/sites/COIMUSAHUB/Safety Data Sheet/Finished Goods/Diexter/SDS_Diexter-G 4555-56.PDF"},{"family":"Diexter","productName":"DIEXTER G- 4555-155","shortName":"DIEXTER G- 4555-155","productType":"LINEAR-MIXED GLYCOL ADIPATE POLYOL","ohNumber":"150.0-155.0","avgMolWeight":"700","acidNumber":"0.5","functionality":"2","viscosity":"260 at 25°C","phase":"LIQUID","glycols":"BGO/NPG"},{"family":"Diexter","productName":"DIEXTER G- 4555-320","shortName":"DIEXTER G- 4555-320","productType":"LINEAR-MIXED GLYCOL ADIPATE POLYOL","ohNumber":"310.0-330.0","avgMolWeight":"350","acidNumber":"1","functionality":"2","viscosity":"60 at 25°C","phase":"LIQUID","glycols":"BGO/NPG","tdsUrl":"https://coimus.sharepoint.com/sites/TDS-TechnicalDataSheets/Shared Documents/PDFs/Diexter-G/TDS_ Diexter-G 4555-320 2024-11.pdf","sdsUrl":"https://coimus.sharepoint.com/sites/COIMUSAHUB/Safety Data Sheet/Finished Goods/Diexter/SDS_Diexter-G 4555-320.pdf"},{"family":"Diexter","productName":"DIEXTER G- 4575-60","shortName":"DIEXTER G- 4575-60","productType":"LINEAR-MIXED GLYCOL ADIPATE POLYOL","ohNumber":"58.0-62.0","avgMolWeight":"1950","acidNumber":"0.5","functionality":"2","viscosity":"4000 at 40°C","phase":"SOLID","glycols":"BDO/NPG","tdsUrl":"https://coimus.sharepoint.com/sites/TDS-TechnicalDataSheets/Shared Documents/PDFs/Diexter-G/TDS_ Diexter-G 4575-60 (Rev. 1).pdf","sdsUrl":"https://coimus.sharepoint.com/sites/COIMUSAHUB/Safety Data Sheet/Finished Goods/Diexter/SDS_Diexter-G 4575-60.pdf"},{"family":"Diexter","productName":"DIEXTER G- 4555-35","shortName":"DIEXTER G- 4555-35","productType":"LINEAR-MIXED GLYCOL ADIPATE POLYOL","ohNumber":"33.0-37.0","avgMolWeight":"3200","acidNumber":"0.5","functionality":"2","viscosity":"5500 at 40°C","phase":"SOLID","glycols":"BDO/NPG"},{"family":"Diexter","productName":"DIEXTER G- 6555-56","shortName":"DIEXTER G- 6555-56","productType":"LINEAR-MIXED GLYCOL ADIPATE POLYOL","ohNumber":"53.0-59.0","avgMolWeight":"2000","acidNumber":"0.5","functionality":"2","viscosity":"3800 at 40°C","phase":"SOLID","glycols":"HDO/NPG","tdsUrl":"https://coimus.sharepoint.com/sites/TDS-TechnicalDataSheets/Shared Documents/PDFs/Diexter-G/TDS_ Diexter-G 6555-56 2024-11.pdf","sdsUrl":"https://coimus.sharepoint.com/sites/COIMUSAHUB/Safety Data Sheet/Finished Goods/Diexter/SDS_Diexter-G 6555-56.pdf"},{"family":"Diexter","productName":"DIEXTER G- 6555-120","shortName":"DIEXTER G- 6555-120","productType":"LINEAR-MIXED GLYCOL ADIPATE POLYOL","ohNumber":"115.0-125.0","avgMolWeight":"900","acidNumber":"0.5","functionality":"2","viscosity":"960 at 40°C","phase":"SOLID","glycols":"HDO/NPG","tdsUrl":"https://coimus.sharepoint.com/sites/TDS-TechnicalDataSheets/Shared Documents/PDFs/Diexter-G/TDS_ Diexter-G 6555-120 2024-11.pdf","sdsUrl":"https://coimus.sharepoint.com/sites/COIMUSAHUB/Safety Data Sheet/Finished Goods/Diexter/SDS_Diexter-G 6555-120.pdf"},{"family":"Diexter","productName":"DIEXTER G- 1100G-48","shortName":"DIEXTER G- 1100G-48","productType":"BRANCHED ADIPATE POLYOLS","ohNumber":"46.0-50.0","avgMolWeight":"2450","acidNumber":"0.5","functionality":"2.1","viscosity":"12500 at 25°C","phase":"LIQUID","glycols":"GLY/DEG","tdsUrl":"https://coimus.sharepoint.com/sites/TDS-TechnicalDataSheets/Shared Documents/PDFs/Diexter-G/TDS_ Diexter-G 1100G-48 2024-11.pdf","sdsUrl":"https://coimus.sharepoint.com/sites/COIMUSAHUB/Safety Data Sheet/Finished Goods/Diexter/SDS_Diexter-G 1100G-48.pdf"},{"family":"Diexter","productName":"DIEXTER G- 1100G-50","shortName":"DIEXTER G- 1100G-50","productType":"BRANCHED ADIPATE POLYOLS","ohNumber":"46.0-52.0","avgMolWeight":"2800","acidNumber":"1","functionality":"2.42","viscosity":"18000 at 25°C","phase":"LIQUID","glycols":"GLY/DEG","tdsUrl":"https://coimus.sharepoint.com/sites/TDS-TechnicalDataSheets/Shared Documents/PDFs/Diexter-G/TDS_ Diexter-G 1100G-50 2024-11.pdf","sdsUrl":"https://coimus.sharepoint.com/sites/COIMUSAHUB/Safety Data Sheet/Finished Goods/Diexter/SDS_Diexter-G 1100G-50.pdf"},{"family":"Diexter","productName":"DIEXTER G- 1100G-53","shortName":"DIEXTER G- 1100G-53","productType":"BRANCHED ADIPATE POLYOLS","ohNumber":"51.0-55.0","avgMolWeight":"2100","acidNumber":"1","functionality":"2.24","viscosity":"11000 at 25°C","phase":"LIQUID","glycols":"GLY/DEG","tdsUrl":"https://coimus.sharepoint.com/sites/TDS-TechnicalDataSheets/Shared Documents/PDFs/Diexter-G/TDS_ Diexter-G 1100G-53 2024-11.pdf","sdsUrl":"https://coimus.sharepoint.com/sites/COIMUSAHUB/Safety Data Sheet/Finished Goods/Diexter/Europe/EU-SDS_Diexter-G 1100G-53.pdf"},{"family":"Diexter","productName":"DIEXTER G- 1100G-94","shortName":"DIEXTER G- 1100G-94","productType":"BRANCHED ADIPATE POLYOLS","ohNumber":"90.0-98.0","avgMolWeight":"1200","acidNumber":"1","functionality":"3.7","viscosity":"26000 at 25°C","phase":"LIQUID","glycols":"GLY/DEG","tdsUrl":"https://coimus.sharepoint.com/sites/TDS-TechnicalDataSheets/Shared Documents/PDFs/Diexter-G/TDS_ Diexter-G 1100G-94 2024-11.pdf","sdsUrl":"https://coimus.sharepoint.com/sites/COIMUSAHUB/Safety Data Sheet/Finished Goods/Diexter/SDS_Diexter-G 1100G-94.PDF"},{"family":"Diexter","productName":"DIEXTER G- 1100T-59U","shortName":"DIEXTER G- 1100T-59U","productType":"BRANCHED ADIPATE POLYOLS","ohNumber":"58.0-62.0","avgMolWeight":"2375","acidNumber":"0.5","functionality":"2.54","viscosity":"14000 at 25°C","phase":"LIQUID","glycols":"TMP/DEG","tdsUrl":"https://coimus.sharepoint.com/sites/TDS-TechnicalDataSheets/Shared Documents/PDFs/Diexter-G/TDS_ Diexter-G 1100T-59U 2024-11.pdf","sdsUrl":"https://coimus.sharepoint.com/sites/COIMUSAHUB/Safety Data Sheet/Finished Goods/Diexter/Europe/SDS_Diexter-G 1100T-59U Europe.pdf"},{"family":"Diexter","productName":"DIEXTER G- 2450T-85","shortName":"DIEXTER G- 2450T-85","productType":"BRANCHED ADIPATE POLYOLS","ohNumber":"81.0-87.0","avgMolWeight":"1475","acidNumber":"0.5","functionality":"2.8","viscosity":"4200 at 40°C","phase":"SOLID","glycols":"TMP/EG/BDO","tdsUrl":"https://coimus.sharepoint.com/sites/TDS-TechnicalDataSheets/Shared Documents/PDFs/Diexter-G/TDS_ Diexter-G 2450T-85 2024-11.pdf","sdsUrl":"https://coimus.sharepoint.com/sites/COIMUSAHUB/Safety Data Sheet/Finished Goods/Diexter/SDS_Diexter-G 2450T-85.pdf"},{"family":"Diexter","productName":"DIEXTER G- 2460T-56","shortName":"DIEXTER G- 2460T-56","productType":"BRANCHED ADIPATE POLYOLS","ohNumber":"54.0-58.0","avgMolWeight":"2180","acidNumber":"0.5","functionality":"2.18","viscosity":"4500 at 40°C","phase":"SOLID","glycols":"TMP/EG/BDO","tdsUrl":"https://coimus.sharepoint.com/sites/TDS-TechnicalDataSheets/Shared Documents/PDFs/Diexter-G/TDS_ Diexter-G 2460T-56 2024-11.pdf","sdsUrl":"https://coimus.sharepoint.com/sites/COIMUSAHUB/Safety Data Sheet/Finished Goods/Diexter/SDS_Diexter-G 2460T-56.pdf"},{"family":"Diexter","productName":"DIEXTER G- 6600T-560","shortName":"DIEXTER G- 6600T-560","productType":"BRANCHED ADIPATE POLYOLS","ohNumber":"545.0-575.0","avgMolWeight":"300","acidNumber":"0.5","functionality":"3.08","viscosity":"2000 at 25°C","phase":"LIQUID","glycols":"TMP/HDO","sdsUrl":"https://coimus.sharepoint.com/sites/COIMUSAHUB/Safety Data Sheet/Finished Goods/Diexter/SDS_Diexter-G 6600T-560.pdf"},{"family":"Diexter","productName":"DIEXTER G- TF-52","shortName":"DIEXTER G- TF-52","productType":"BRANCHED ADIPATE POLYOLS","ohNumber":"52.0-56.0","avgMolWeight":"2000","acidNumber":"0.5","functionality":"2.4","viscosity":"23000 at 25°C","phase":"LIQUID","glycols":"GLY/DEG","tdsUrl":"https://coimus.sharepoint.com/sites/TDS-TechnicalDataSheets/Shared Documents/PDFs/Diexter-G/TDS_ Diexter-G TF-52 2024-11.pdf","sdsUrl":"https://coimus.sharepoint.com/sites/COIMUSAHUB/Safety Data Sheet/Finished Goods/Diexter/SDS_Diexter-G TF-52 Burnett.PDF"},{"family":"Diexter","productName":"DIEXTER G- CF-60","shortName":"DIEXTER G- CF-60","productType":"BRANCHED ADIPATE POLYOLS","ohNumber":"57.0-61.0","avgMolWeight":"2850","acidNumber":"1.4","functionality":"1.7","viscosity":"23000 at 25°C","phase":"LIQUID","glycols":"GLY/DEG","sdsUrl":"https://coimus.sharepoint.com/sites/COIMUSAHUB/Safety Data Sheet/Finished Goods/Diexter/SDS_Diexter-G CF-60.pdf"},{"family":"Diexter","productName":" 173LF","shortName":" 173LF","productType":"BRANCHED ADIPATE POLYOLS","ohNumber":"58.5-62.5","avgMolWeight":"2600","acidNumber":"1.7","functionality":"2.8","viscosity":"20000 at 25°C","phase":"LIQUID","glycols":"TMP/DEG","sdsUrl":"https://coimus.sharepoint.com/sites/COIMUSAHUB/Safety Data Sheet/Finished Goods/Diexter/SDS_Diexter-G 173 LF.PDF"},{"family":"Isoexter","productName":"ISOEXTER 3061-US","shortName":"ISOEXTER 3061-US","ohNumber":"305-325","acidNumber":"<2.5","functionality":"2","viscosity":"3200","tdsUrl":"https://coimus.sharepoint.com/sites/TDS-TechnicalDataSheets/Shared Documents/PDFs/Isoexter/TDS_Isoexter 3061-US 2024-11.pdf","sdsUrl":"https://coimus.sharepoint.com/sites/COIMUSAHUB/Safety Data Sheet/Finished Goods/Isoexter/SDS_Isoexter 3061-US.pdf"},{"family":"Isoexter","productName":"ISOEXTER TL-236","shortName":"ISOEXTER TL-236","ohNumber":"225-245","acidNumber":"<1.5","functionality":"2","viscosity":"3000","sdsUrl":"https://coimus.sharepoint.com/sites/COIMUSAHUB/Safety Data Sheet/Finished Goods/Isoexter/SDS_Isoexter TL-236.pdf"},{"family":"Isoexter","productName":"ISOEXTER TL-250","shortName":"ISOEXTER TL-250","ohNumber":"240-260","acidNumber":"<1.5","functionality":"2","viscosity":"5000","tdsUrl":"https://coimus.sharepoint.com/sites/TDS-TechnicalDataSheets/Shared Documents/PDFs/Isoexter/TDS_Isoexter TL-250 2024-11.pdf","sdsUrl":"https://coimus.sharepoint.com/sites/COIMUSAHUB/Safety Data Sheet/Finished Goods/Isoexter/SDS_Isoexter TL-250.pdf"},{"family":"Isoexter","productName":"ISOEXTER 4404-US","shortName":"ISOEXTER 4404-US","ohNumber":"230-250","acidNumber":"<1.0","functionality":"2","viscosity":"3000","tdsUrl":"https://coimus.sharepoint.com/sites/TDS-TechnicalDataSheets/Shared Documents/PDFs/Isoexter/TDS_Isoexter 4404-US 2024-11.pdf","sdsUrl":"https://coimus.sharepoint.com/sites/COIMUSAHUB/Safety Data Sheet/Finished Goods/Isoexter/SDS_Isoexter 4404-US E1.5.pdf"},{"family":"Isoexter","productName":"ISOEXTER 4405","shortName":"ISOEXTER 4405","ohNumber":"235-245","acidNumber":"<1.0","functionality":"2","viscosity":"3500","tdsUrl":"https://coimus.sharepoint.com/sites/TDS-TechnicalDataSheets/Shared Documents/PDFs/Isoexter/TDS_Isoexter 4405 2024-11.pdf","sdsUrl":"https://coimus.sharepoint.com/sites/COIMUSAHUB/Safety Data Sheet/Finished Goods/Isoexter/SDS_Isoexter 4405.PDF"},{"family":"Isoexter","productName":"ISOEXTER PL-260","shortName":"ISOEXTER PL-260","ohNumber":"250-270","acidNumber":"<1.0","functionality":"2","viscosity":"5000","sdsUrl":"https://coimus.sharepoint.com/sites/COIMUSAHUB/Safety Data Sheet/Finished Goods/Isoexter/SDS_Isoexter PL-260.pdf"},{"family":"Isoexter","productName":"ISOEXTER TB-307","shortName":"ISOEXTER TB-307","ohNumber":"295-315","acidNumber":"<1.5","functionality":"2.5","viscosity":"8000","tdsUrl":"https://coimus.sharepoint.com/sites/TDS-TechnicalDataSheets/Shared Documents/PDFs/Isoexter/TDS_Isoexter TB-307 2024-11.pdf","sdsUrl":"https://coimus.sharepoint.com/sites/COIMUSAHUB/Safety Data Sheet/Finished Goods/Isoexter/SDS_Isoexter TB-307.pdf"},{"family":"Isoexter","productName":"ISOEXTER TB-350","shortName":"ISOEXTER TB-350","ohNumber":"340-360","acidNumber":"<1.0","functionality":"2.2","viscosity":"3000","tdsUrl":"https://coimus.sharepoint.com/sites/TDS-TechnicalDataSheets/Shared Documents/PDFs/Isoexter/TDS_Isoexter TB-350 2024-11.pdf","sdsUrl":"https://coimus.sharepoint.com/sites/COIMUSAHUB/Safety Data Sheet/Finished Goods/Isoexter/SDS_Isoexter TB-350.pdf"},{"family":"Isoexter","productName":"ISOEXTER TB-351","shortName":"ISOEXTER TB-351","ohNumber":"340-360","acidNumber":"<1.5","functionality":"2.4","viscosity":"2200","sdsUrl":"https://coimus.sharepoint.com/sites/COIMUSAHUB/Safety Data Sheet/Finished Goods/Isoexter/SDS_Isoexter TB-351.PDF"},{"family":"Isoexter","productName":"ISOEXTER TB-375","shortName":"ISOEXTER TB-375","ohNumber":"365-385","acidNumber":"<1.5","functionality":"3","viscosity":"5000","tdsUrl":"https://coimus.sharepoint.com/sites/TDS-TechnicalDataSheets/Shared Documents/PDFs/Isoexter/TDS_Isoexter TB-375 2024-11.pdf","sdsUrl":"https://coimus.sharepoint.com/sites/COIMUSAHUB/Safety Data Sheet/Finished Goods/Isoexter/SDS_Isoexter TB-375.pdf"},{"family":"Isoexter","productName":"ISOEXTER XB-430","shortName":"ISOEXTER XB-430","ohNumber":"425-445","acidNumber":"<1.5","functionality":"4","viscosity":"6000","tdsUrl":"https://coimus.sharepoint.com/sites/TDS-TechnicalDataSheets/Shared Documents/PDFs/Isoexter/TDS_Isoexter XB-430 2024-11.pdf","sdsUrl":"https://coimus.sharepoint.com/sites/COIMUSAHUB/Safety Data Sheet/Finished Goods/Isoexter/SDS_Isoexter XB-430. (v2).PDF"},{"family":"Isoexter","productName":"ISOTER 1800-420","shortName":"ISOTER 1800-420","ohNumber":"420","functionality":"3","viscosity":"1000","sdsUrl":"https://coimus.sharepoint.com/sites/COIMUSAHUB/Safety Data Sheet/Finished Goods/Isoter/SDS_Isoter 1800-470.PDF"},{"family":"Isoexter","productName":"ISOTER 1800-470","shortName":"ISOTER 1800-470","ohNumber":"470","functionality":"4","viscosity":"1000","sdsUrl":"https://coimus.sharepoint.com/sites/COIMUSAHUB/Safety Data Sheet/Finished Goods/Isoter/SDS_Isoter 1800-470.PDF"},{"family":"Exter-S","productName":"EXTER-S 618","shortName":"EXTER-S 618","solids":"50%","solvent":"S150","tg":"35 °C","viscosity":"2800-4000 at 25C","ohNumber":"25-50","acidNumber":"< 3","applications":"Can – tube/aersolsnCan – aluminum foilsnCoil – int architecturalnCoil – primer","tdsUrl":"https://coimus.sharepoint.com/sites/TDS-TechnicalDataSheets/Shared Documents/PDFs/Exter S/TDS_ Exter S618 2 2024-12.pdf","sdsUrl":"https://coimus.sharepoint.com/sites/COIMUSAHUB/Safety Data Sheet/Finished Goods/Exter/S618_SDS.pdf"},{"family":"Exter-S","productName":"EXTER 635","shortName":"EXTER 635","solids":"60%","solvent":"S100","viscosity":"2,800 – 4,000","ohNumber":"25 – 50","acidNumber":"<5","applications":"Coil – ext architecturalnCoil – primer","tdsUrl":"https://coimus.sharepoint.com/sites/TDS-TechnicalDataSheets/Shared Documents/PDFs/Exter S/TDS_ Exter S635 2024-12.pdf","sdsUrl":"https://coimus.sharepoint.com/sites/COIMUSAHUB/Safety Data Sheet/Finished Goods/Exter/S635_SDS.pdf"},{"family":"Exter-S","productName":"EXTER 612","shortName":"EXTER 612","solids":"60%","solvent":"S150/BG","tg":"25 °C","viscosity":"4,000 – 5,000","ohNumber":"30 – 50","acidNumber":"3 – 10","applications":"Can – tube/aersolsnCan – aluminum foils","tdsUrl":"https://coimus.sharepoint.com/sites/TDS-TechnicalDataSheets/Shared Documents/PDFs/Exter S/TDS_ Exter S612 2 2024-12.pdf","sdsUrl":"https://coimus.sharepoint.com/sites/COIMUSAHUB/Safety Data Sheet/Finished Goods/Exter/S612_SDS_EN.pdf"},{"family":"Exter-S","productName":"EXTER 629","shortName":"EXTER 629","solids":"67%","solvent":"PMA/Xylene","tg":"40 °C","viscosity":"19,000 – 29,000","ohNumber":"240 – 300","acidNumber":"<5","applications":"Industrial Wood","tdsUrl":"https://coimus.sharepoint.com/sites/TDS-TechnicalDataSheets/Shared Documents/PDFs/Exter S/TDS_Exter S629 2 2024-12.pdf","sdsUrl":"https://coimus.sharepoint.com/sites/COIMUSAHUB/Safety Data Sheet/Finished Goods/Exter/S629_SDS_EN.pdf"},{"family":"Exter-S","productName":"EXTER 645BA","shortName":"EXTER 645BA","solids":"60%","solvent":"Butyl Acetate","viscosity":"350 – 650","acidNumber":"45 – 55","applications":"Nail CoatingnCoil – int architectural","tdsUrl":"https://coimus.sharepoint.com/sites/TDS-TechnicalDataSheets/Shared Documents/PDFs/Exter S/TDS_ Exter S645BA 2 2024-12.PDF","sdsUrl":"https://coimus.sharepoint.com/sites/COIMUSAHUB/Safety Data Sheet/Finished Goods/Exter/SDS_Exter S645BA.pdf"},{"family":"Hydroexter","productName":"HYDROEXTER I64-145","shortName":"HYDROEXTER I64-145","application":"Coatings","solids":"64","viscosity":"10,000 - 30,000 at 25°C","ohNumber":"145","pH":"7.3","tdsUrl":"https://coimus.sharepoint.com/sites/TDS-TechnicalDataSheets/Shared Documents/PDFs/Hydroexter/TDS_Hydoexter I64-145 2024-12.pdf","sdsUrl":"https://coimus.sharepoint.com/sites/COIMUSAHUB/Safety Data Sheet/Finished Goods/Hydroexter/SDS_Hydroexter I64-145.PDF"},{"family":"Novacote Adhesives","productName":"NOVACOTE NC-250/70-A + CA-350","shortName":"NOVACOTE NC-250/70-A + CA-350","technology":"Solvent-based","chemistry":"2K PU","application":"Flexible Packaging","fdaClearance":"177.1390 – High Performance","sdsPrepolymerUrl":"https://coimus.sharepoint.com/:b:/r/sites/COIMUSAHUB/Safety Data Sheet/Finished Goods/Novacote/SDS_Novacote NC-250_70-A.pdf","sdsCurativeUrl":"https://coimus.sharepoint.com/:b:/r/sites/COIMUSAHUB/Safety Data Sheet/Finished Goods/Novacote/SDS_Novacote CA-350.PDF"},{"family":"Novacote Adhesives","productName":"NOVACOTE NC-275-A + CA-12","shortName":"NOVACOTE NC-275-A + CA-12","technology":"Solvent-based","chemistry":"2K PU","application":"Flexible Packaging","fdaClearance":"177.1395 – Medium Performance","sdsPrepolymerUrl":"https://coimus.sharepoint.com/:b:/r/sites/COIMUSAHUB/Safety Data Sheet/Finished Goods/Novacote/SDS_Novacote NC-275-A.PDF","sdsCurativeUrl":"https://coimus.sharepoint.com/:b:/r/sites/COIMUSAHUB/Safety Data Sheet/Finished Goods/Novacote/SDS_Novacote CA-12.PDF"},{"family":"Novacote Adhesives","productName":"NOVACOTE NC-222/75 + CA-12","shortName":"NOVACOTE NC-222/75 + CA-12","technology":"Solvent-based","chemistry":"2K PU","application":"Flexible Packaging","fdaClearance":"175.105 – General Purpose","sdsPrepolymerUrl":"https://coimus.sharepoint.com/sites/COIMUSAHUB/Safety Data Sheet/Finished Goods/Novacote/SDS_Novacote NC-250_70-A.pdf","sdsCurativeUrl":"https://coimus.sharepoint.com/:b:/r/sites/COIMUSAHUB/Safety Data Sheet/Finished Goods/Novacote/SDS_Novacote CA-12.PDF"},{"family":"Novacote Adhesives","productName":"NOVACOTE NC-23 MAC + CA-350","shortName":"NOVACOTE NC-23 MAC + CA-350","technology":"Solvent-based","chemistry":"2K PU","application":"Flexible Packaging","fdaClearance":"177.1390 – High Performance","sdsPrepolymerUrl":"https://coimus.sharepoint.com/sites/COIMUSAHUB/Safety Data Sheet/Finished Goods/Novacote/SDS_Novacote NC-23MAC.pdf","sdsCurativeUrl":"https://coimus.sharepoint.com/:b:/r/sites/COIMUSAHUB/Safety Data Sheet/Finished Goods/Novacote/SDS_Novacote CA-350.PDF"},{"family":"Novacote Adhesives","productName":"NOVACOTE NC-560-A + CA-101","shortName":"NOVACOTE NC-560-A + CA-101","technology":"Solvent-based","chemistry":"2K PU","application":"Flexible Packaging; Non-yellowing","fdaClearance":"177.1390 – High Performance","sdsPrepolymerUrl":"https://coimus.sharepoint.com/sites/COIMUSAHUB/Safety Data Sheet/Finished Goods/Novacote/SDS_Novacote NC-560A.PDF","sdsCurativeUrl":"https://coimus.sharepoint.com/sites/COIMUSAHUB/Safety Data Sheet/Finished Goods/Novacote/SDS_Novacote CA-101.PDF"},{"family":"Novacote Adhesives","productName":"NOVACOTE NE-810S + CE-510","shortName":"NOVACOTE NE-810S + CE-510","technology":"Solvent-based","chemistry":"2K PU","application":"Flexible Packaging","fdaClearance":"175.105 – General Purpose","sdsPrepolymerUrl":"https://coimus.sharepoint.com/sites/COIMUSAHUB/Safety Data Sheet/Finished Goods/Novacote/SDS_Novacote NE-810S.pdf","sdsCurativeUrl":"https://coimus.sharepoint.com/sites/COIMUSAHUB/Safety Data Sheet/Finished Goods/Novacote/SDS_Novacote CE-510.pdf"},{"family":"Novacote Adhesives","productName":"NOVACOTE SF-5400 + CA-5503","shortName":"NOVACOTE SF-5400 + CA-5503","technology":"Solvent free","chemistry":"2K PU","application":"Flexible Packaging","fdaClearance":"175.105 – General Purpose","sdsPrepolymerUrl":"https://coimus.sharepoint.com/sites/COIMUSAHUB/Safety Data Sheet/Finished Goods/Novacote/SDS_Novacote SF-5400.PDF","sdsCurativeUrl":"https://coimus.sharepoint.com/sites/COIMUSAHUB/Safety Data Sheet/Finished Goods/Novacote/SDS_Novacote CA-5503.PDF"},{"family":"Novacote Adhesives","productName":"NOVACOTE SF-787-A + CA-336","shortName":"NOVACOTE SF-787-A + CA-336","technology":"Solvent free","chemistry":"2K PU","application":"Flexible Packaging; High barrier structures; Digital ink","fdaClearance":"175.105 – General Purpose","sdsPrepolymerUrl":"https://coimus.sharepoint.com/sites/COIMUSAHUB/Safety Data Sheet/Finished Goods/Novacote/SDS_Novacote SF-787A.PDF","sdsCurativeUrl":"https://coimus.sharepoint.com/sites/COIMUSAHUB/Safety Data Sheet/Finished Goods/Novacote/SDS_Novacote CA-336.PDF"},{"family":"Novacote Adhesives","productName":"NOVACOTE SF-716-A + CA-336","shortName":"NOVACOTE SF-716-A + CA-336","technology":"Solvent free","chemistry":"2K PU","application":"Flexible Packaging","fdaClearance":"177.1395 – Medium Performance","sdsPrepolymerUrl":"https://coimus.sharepoint.com/sites/COIMUSAHUB/Safety Data Sheet/Finished Goods/Novacote/SDS_Novacote SF-716A.pdf","sdsCurativeUrl":"https://coimus.sharepoint.com/sites/COIMUSAHUB/Safety Data Sheet/Finished Goods/Novacote/SDS_Novacote CA-336.PDF"},{"family":"Novacote Adhesives","productName":"NOVACOTE SF-9740 + CA-478","shortName":"NOVACOTE SF-9740 + CA-478","technology":"Solvent free","chemistry":"2K PU","application":"Flexible Packaging","fdaClearance":"177.1395 – Medium Performance","sdsPrepolymerUrl":"https://coimus.sharepoint.com/sites/COIMUSAHUB/Safety Data Sheet/Finished Goods/Novacote/SDS_Novacote SF-9740.PDF","sdsCurativeUrl":"https://coimus.sharepoint.com/sites/COIMUSAHUB/Safety Data Sheet/Finished Goods/Novacote/SDS_Novacote CA-478.PDF"},{"family":"Novacote Adhesives","productName":"NOVACOTE SF-693","shortName":"NOVACOTE SF-693","technology":"Solvent free","chemistry":"1K PU","application":"Flexible Packaging; Paper/paper or Paper/film applications","fdaClearance":"175.105 – General Purpose","sdsPrepolymerUrl":"https://coimus.sharepoint.com/sites/COIMUSAHUB/Safety Data Sheet/Finished Goods/Novacote/SDS_Novacote SF-693.PDF"},{"family":"Novacote Adhesives","productName":"NOVACOTE SF-783-A + CA-376","shortName":"NOVACOTE SF-783-A + CA-376","technology":"Solvent free","chemistry":"2K PU","application":"Flexible Packaging","fdaClearance":"177.1390 – High Performance","sdsPrepolymerUrl":"https://coimus.sharepoint.com/sites/COIMUSAHUB/Safety Data Sheet/Finished Goods/Novacote/SDS_Novacote SF-783-A.PDF","sdsCurativeUrl":"https://coimus.sharepoint.com/sites/COIMUSAHUB/Safety Data Sheet/Finished Goods/Novacote/SDS_Novacote CA-376.PDF"},{"family":"Novacote Adhesives","productName":"NOVAWASH SP-100","shortName":"NOVAWASH SP-100","technology":"Solvent free","chemistry":"Cleaning agent designed to remove hard unreacted polyurethane adhesivesnand curatives during cleaning processes","application":"Flexible Packaging","sdsPrepolymerUrl":"https://coimus.sharepoint.com/sites/COIMUSAHUB/Safety Data Sheet/Finished Goods/Novacote/SDS_NovaWash SP-100.PDF"},{"family":"Novacote Coatings","productName":"NOVACOTE EX-8001","shortName":"NOVACOTE EX-8001","technology":"Solvent-based, Heatseal","application":"Ovenable, Fresh Food, Ready Meals","coatedSubstrate":"PET","sealToSubstrate":"CPET WITH APET FLANGE","pvcFree":"No","styreneFree":"No","antiFog":"Yes","sdsUrl":"https://coimus.sharepoint.com/sites/COIMUSAHUB/Safety Data Sheet/Finished Goods/Novacote/SDS_Novacote EX-8001.pdf"},{"family":"Novacote Coatings","productName":"NOVACOTE EX-8375","shortName":"NOVACOTE EX-8375","technology":"Solvent-based, Heatseal","application":"Dairy Lidding","coatedSubstrate":"FOIL, PET-based LIDS","sealToSubstrate":"PS, PVC, APET, CPET","pvcFree":"Yes","styreneFree":"No","antiFog":"No","sdsUrl":"https://coimus.sharepoint.com/sites/COIMUSAHUB/Safety Data Sheet/Finished Goods/Novacote/SDS_Novacote EX-8375_US.PDF"},{"family":"Novacote Coatings","productName":"NOVACOTE HS-108/1","shortName":"NOVACOTE HS-108/1","technology":"Solvent-based, Heatseal","application":"Dairy Lidding","coatedSubstrate":"PAPER/PET, FOIL/PET","sealToSubstrate":"PAPER/PET, FOIL/PET","pvcFree":"No","styreneFree":"No","antiFog":"No","sdsUrl":"https://coimus.sharepoint.com/sites/COIMUSAHUB/Safety Data Sheet/Finished Goods/Novacote/SDS_Novacote HS-108.1.PDF"},{"family":"Novacote Coatings","productName":"NOVACOTE HS-8416","shortName":"NOVACOTE HS-8416","technology":"Solvent-based, Heatseal","application":"Diary Lidding, Pharma Blister Pack, Condiment Sauces","coatedSubstrate":"FOIL, PET (MONOWEB or LAMINATE)","sealToSubstrate":"PS, PVC, APET, PP, PE","pvcFree":"Yes","styreneFree":"No","antiFog":"No","sdsUrl":"https://coimus.sharepoint.com/sites/COIMUSAHUB/Safety Data Sheet/Finished Goods/Novacote/SDS_Novacote HS-8416.PDF"},{"family":"Novacote Coatings","productName":"NOVACOTE HS 8429","shortName":"NOVACOTE HS 8429","technology":"Solvent-based, Heatseal","application":"Coffee","coatedSubstrate":"APET, PLAIN PET, OPP, ACRYLIC OPP, PLA, PE, PS, PAPER, PVC, MET FILM, FOIL","sealToSubstrate":"SELF SEAL, PP","pvcFree":"Yes","styreneFree":"No","antiFog":"No","sdsUrl":"https://coimus.sharepoint.com/sites/COIMUSAHUB/Safety Data Sheet/Finished Goods/Novacote/SDS_Novacote HS-8429.pdf"},{"family":"Novacote Coatings","productName":"NOVACOTE EX-8001","shortName":"NOVACOTE EX-8001","technology":"Solvent-based, Heatseal","application":"Ovenable, Fresh Food, Ready Meals","coatedSubstrate":"PET","sealToSubstrate":"CPET WITH APET FLANGE","pvcFree":"No","styreneFree":"No","antiFog":"Yes","sdsUrl":"https://coimus.sharepoint.com/sites/COIMUSAHUB/Safety Data Sheet/Finished Goods/Novacote/SDS_Novacote EX-8001.pdf"},{"family":"Novacote Coatings","productName":"NOVACOTE HS-8436","shortName":"NOVACOTE HS-8436","technology":"Solvent-based, Heatseal","application":"Dairy Lidding","coatedSubstrate":"PET (MONOWEB OR LAMINATE)","sealToSubstrate":"PS, PVC, APET, PLA","pvcFree":"Yes","styreneFree":"Yes","antiFog":"No"},{"family":"Novacote Coatings","productName":"NOVACOTE HS-8345","shortName":"NOVACOTE HS-8345","technology":"Solvent-based, Heatseal","application":"Fresh Food, Ready Meals, Other Flexible Packaging","coatedSubstrate":"PET","sealToSubstrate":"APET, CPET, PP, PS","pvcFree":"No","styreneFree":"No","antiFog":"Yes","sdsUrl":"https://coimus.sharepoint.com/sites/COIMUSAHUB/Safety Data Sheet/Finished Goods/Novacote/SDS_Novacote HS-8345.pdf"},{"family":"Novacote Coatings","productName":"NOVACOTE NC-3128/2","shortName":"NOVACOTE NC-3128/2","technology":"Solvent-based, Varnish","application":"Fresh Food, Ready Meals, Other Flexible Packaging","coatedSubstrate":"Packaging films,","pvcFree":"No","styreneFree":"No","antiFog":"Yes","sdsUrl":"https://coimus.sharepoint.com/sites/COIMUSAHUB/Safety Data Sheet/Finished Goods/Novacote/NC31282_US SDS_EN_rev1.PDF"},{"family":"Novacote Coatings","productName":"NOVACOTE VA-8064 + CA-916","shortName":"NOVACOTE VA-8064 + CA-916","technology":"Solvent-based, Varnish","application":"Packaging (Matte)","coatedSubstrate":"Packaging films, Lid stock","pvcFree":"No","styreneFree":"No","antiFog":"No","sdsUrl":"https://coimus.sharepoint.com/sites/COIMUSAHUB/Safety Data Sheet/Finished Goods/Novacote/SDS_Novacote VA-8064.PDF"},{"family":"Novacote Coatings","productName":"NOVACOTE VA-8015 + CA-916","shortName":"NOVACOTE VA-8015 + CA-916","technology":"Solvent-based, Varnish","application":"Packaging (Gloss)","coatedSubstrate":"Packaging films, Lid stock","pvcFree":"No","styreneFree":"No","antiFog":"No","sdsUrl":"https://coimus.sharepoint.com/sites/COIMUSAHUB/Safety Data Sheet/Finished Goods/Novacote/SDS_Novacote VA 8015.PDF"},{"family":"Neotherm","productName":"NEOTHERM 3353","shortName":"NEOTHERM 3353","productType":"Profile Wrap","endUseMarket":"Windows, Fence, Decking","viscosity":"12,500 cPs @140°C ","processingTemp":"110 – 150°C","initialStrength":"x x","openTime":"x","tdsUrl":"https://coimus.sharepoint.com/sites/TDS-TechnicalDataSheets/Shared Documents/PDFs/Neotherm/Neoflex Spain TDS/Neotherm PU 3353 (ENG_TDS).pdf","sdsUrl":"https://coimus.sharepoint.com/sites/COIMUSAHUB/Safety Data Sheet/Finished Goods/Neotherm/NEOTHERM PU-3353 (MSDS).EN.pdf"},{"family":"Neotherm","productName":"NEOTHERM 3418","shortName":"NEOTHERM 3418","productType":"Flat lamination","endUseMarket":"RV, Doors","viscosity":"10,500 cPs at 120°C","processingTemp":"110 – 160°C","initialStrength":"x x x","openTime":"x x x","tdsUrl":"https://coimus.sharepoint.com/sites/TDS-TechnicalDataSheets/Shared Documents/PDFs/Neotherm/Neoflex Spain TDS/Neotherm PU 3418 (ENG_TDS).pdf","sdsUrl":"https://coimus.sharepoint.com/sites/COIMUSAHUB/Safety Data Sheet/Finished Goods/Neotherm/NEOTHERM PU-3756 (MSDS).EN.pdf"},{"family":"Neotherm","productName":"NEOTHERM 3650","shortName":"NEOTHERM 3650","productType":"Textiles","endUseMarket":"Health, Automotive interior, Sandpaper","viscosity":"7,500 cPs at 120°C","processingTemp":"90 – 120°C","initialStrength":"x","openTime":"x x x","tdsUrl":"https://coimus.sharepoint.com/sites/TDS-TechnicalDataSheets/Shared Documents/PDFs/Neotherm/Neoflex Spain TDS/Neotherm PU 3650 (ENG_TDS).pdf","sdsUrl":"https://coimus.sharepoint.com/sites/COIMUSAHUB/Safety Data Sheet/Finished Goods/Neotherm/SDS_Neotherm PU 3418.PDF"},{"family":"Neotherm","productName":"NEOTHERM 3672","shortName":"NEOTHERM 3672","productType":"Textiles","endUseMarket":"Flexible Foams & Fabrics","viscosity":"11,500cPs at 120°C","processingTemp":"110 – 160°C","initialStrength":"x x","openTime":"x x x","tdsUrl":"https://coimus.sharepoint.com/sites/TDS-TechnicalDataSheets/Shared Documents/PDFs/Neotherm/Neoflex Spain TDS/Neotherm PU 3672 (ENG_TDS).pdf","sdsUrl":"https://coimus.sharepoint.com/sites/COIMUSAHUB/Safety Data Sheet/Finished Goods/Neotherm/SDS_Neotherm PU 3650.PDF"},{"family":"Neotherm","productName":"NEOTHERM 3752","shortName":"NEOTHERM 3752","productType":"Profile Wrap","endUseMarket":"Woodworking","viscosity":"30,000 cPs at 140°C","processingTemp":"110 – 160°C","initialStrength":"x x x","openTime":"x","tdsUrl":"https://coimus.sharepoint.com/sites/TDS-TechnicalDataSheets/Shared Documents/PDFs/Neotherm/Neoflex Spain TDS/Neotherm PU 3752 (ENG_TDS).pdf","sdsUrl":"https://coimus.sharepoint.com/sites/COIMUSAHUB/Safety Data Sheet/Finished Goods/Neotherm/SDS_Neotherm PU 3672.PDF"},{"family":"Neotherm","productName":"NEOTHERM 3797","shortName":"NEOTHERM 3797","productType":"Profile Wrap","endUseMarket":"Woodworking","viscosity":"25,000 cPs @140°C","processingTemp":"110 – 160°C","initialStrength":"x x x","openTime":"x x","tdsUrl":"https://coimus.sharepoint.com/sites/TDS-TechnicalDataSheets/Shared Documents/PDFs/Neotherm/TDS_NEOTHERM 3797 2025-02.pdf","sdsUrl":"https://coimus.sharepoint.com/sites/COIMUSAHUB/Safety Data Sheet/Finished Goods/Neotherm/SDS_Neotherm PU 3797.PDF"},{"family":"Neotherm","productName":"NEOTHERM 3805","shortName":"NEOTHERM 3805","productType":"General Assmebly","endUseMarket":"Automotive, Flooring, RV, Doors","viscosity":"12,500 cPs at 120°C","processingTemp":"110 – 160°C","initialStrength":"x x x","openTime":"x x","tdsUrl":"https://coimus.sharepoint.com/sites/TDS-TechnicalDataSheets/Shared Documents/PDFs/Neotherm/TDS_NEOTHERM 3805 2025-02.pdf","sdsUrl":"https://coimus.sharepoint.com/sites/COIMUSAHUB/Safety Data Sheet/Finished Goods/Neotherm/SDS_Neotherm PU 3805.PDF"},{"family":"Neotherm","productName":"NEOTHERM PU-3756","shortName":"NEOTHERM PU-3756","productType":"Abrasives","endUseMarket":"Sandpaper","viscosity":"30,000 cPs at 140°C","processingTemp":"110 – 150°C","initialStrength":"x x x","openTime":"x x","tdsUrl":"https://coimus.sharepoint.com/sites/TDS-TechnicalDataSheets/Shared Documents/PDFs/Neotherm/TDS_NEOTHERM 3756 2025-02.pdf","sdsUrl":"https://coimus.sharepoint.com/sites/COIMUSAHUB/Safety Data Sheet/Finished Goods/Neotherm/NEOTHERM PU-3756 (MSDS).EN.pdf"},{"family":"Neotherm","productName":"NEOTHERM PU-3794","shortName":"NEOTHERM PU-3794","productType":"Edge Band","endUseMarket":"Woodworking","viscosity":"50,000 cPs at 140°C","processingTemp":"110 – 160°C","initialStrength":"x x x","openTime":"x x","tdsUrl":"https://coimus.sharepoint.com/sites/TDS-TechnicalDataSheets/Shared Documents/PDFs/Neotherm/TDS_NEOTHERM 3794 2025-02.pdf","sdsUrl":"https://coimus.sharepoint.com/sites/COIMUSAHUB/Safety Data Sheet/Finished Goods/Neotherm/SDS_Neotherm PU 3794.PDF"}];
+
+                // Filter configurations for each family
+        const filterConfigs = {"Imuthane":[{"key":"productType","label":"Product Type","type":"chips"},{"key":"shoreHardness","label":"Shore Hardness","type":"chips"},{"key":"ncoRange","label":"NCO Range","type":"dropdown"}],"Blocked Imuthane":[{"key":"chemistry","label":"Chemistry","type":"chips"},{"key":"unblockedNco","label":"Unblocked NCO","type":"chips"}],"Imuthane Systems":[{"key":"shoreHardness","label":"Shore Hardness","type":"chips"}],"Imuthane Additives":[],"Imucure":[{"key":"chemistry","label":"Chemistry","type":"chips"},{"key":"equivalentWeight","label":"Equivalent Weight","type":"chips"}],"Diexter":[{"key":"ohNumber","label":"OH Number","type":"dropdown"},{"key":"functionality","label":"Functionality","type":"chips"},{"key":"glycols","label":"Glycols","type":"chips"}],"Diexter Specialty":[{"key":"ohNumber","label":"OH Number","type":"dropdown"},{"key":"functionality","label":"Functionality","type":"chips"}],"Isoexter":[{"key":"ohNumber","label":"OH Number","type":"chips"},{"key":"functionality","label":"Functionality","type":"chips"}],"Exter-S":[{"key":"solvent","label":"Solvent","type":"chips"},{"key":"tg","label":"Tg","type":"chips"}],"Hydroexter":[{"key":"application","label":"Application","type":"chips"},{"key":"solids","label":"Solids %","type":"chips"}],"Novacote Adhesives":[{"key":"technology","label":"Technology","type":"chips"},{"key":"chemistry","label":"Chemistry","type":"chips"},{"key":"fdaClearance","label":"FDA Clearance","type":"dropdown"}],"Novacote Coatings":[{"key":"application","label":"Application","type":"chips"},{"key":"pvcFree","label":"PVC Free","type":"boolean"},{"key":"styreneFree","label":"Styrene Free","type":"boolean"},{"key":"antiFog","label":"Anti Fog","type":"boolean"}],"Neotherm":[{"key":"endUseMarket","label":"End-Use Market","type":"chips"},{"key":"processingTemp","label":"Processing Temp","type":"dropdown"}]};
+
+        let currentFamily = 'all';
+        let activeFilters = {};
+        let selectedIndex = -1;
+        let currentFilteredProducts = [];
+
+        const searchInput = document.getElementById('searchInput');
+        const suggestionsDiv = document.getElementById('suggestions');
+        const resultsContainer = document.getElementById('resultsContainer');
+        const resultsCount = document.getElementById('resultsCount');
+        const clearButton = document.getElementById('clearButton');
+        const loadingDiv = document.getElementById('loading');
+        const filterTabs = document.querySelectorAll('.tab');
+        const secondaryFilters = document.getElementById('secondaryFilters');
+        const noResultsSuggestion = document.getElementById('noResultsSuggestion');
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            displayAllProducts();
+            updateResultsCount();
+        });
+
+        // Family tab click handlers
+        filterTabs.forEach(tab => {
+            tab.addEventListener('click', function() {
+                filterTabs.forEach(t => t.classList.remove('active'));
+                this.classList.add('active');
+                currentFamily = this.dataset.family;
+                activeFilters = {};
+                searchInput.value = '';
+                clearButton.classList.remove('visible');
+                hideSuggestions();
+                
+                if (currentFamily === 'all') {
+                    secondaryFilters.classList.remove('active');
+                } else {
+                    buildSecondaryFilters();
+                }
+                
+                applyAllFilters();
+            });
+        });
+
+        function buildSecondaryFilters() {
+            if (currentFamily === 'all') return;
+            
+            const config = filterConfigs[currentFamily];
+            if (!config) return;
+
+            let html = `
+                <div class="filter-header">
+                    <div class="filter-title">Filter ${currentFamily} Products</div>
+                    <button class="clear-filters-btn" onclick="clearAllFilters()">Clear Filters</button>
+                </div>
+            `;
+
+            config.forEach(filter => {
+                const values = getUniqueValuesForFilter(filter.key);
+                if (values.length === 0) return;
+
+                html += `<div class="filter-group">`;
+                html += `<div class="filter-label">${filter.label}</div>`;
+                html += `<div class="filter-options">`;
+
+                if (filter.type === 'chips') {
+                    values.forEach(value => {
+                        const isActive = activeFilters[filter.key]?.includes(value) || false;
+                        const isDisabled = !isValueAvailable(filter.key, value);
+                        html += `
+                            <div class="filter-chip ${isActive ? 'active' : ''} ${isDisabled ? 'disabled' : ''}" 
+                                 onclick="toggleFilter('${filter.key}', '${value.replace(/'/g, "\\'")}')">
+                                ${value}
+                                ${isActive ? '<span class="remove-filter">×</span>' : ''}
+                            </div>
+                        `;
+                    });
+                } else if (filter.type === 'dropdown') {
+                    const activeValue = activeFilters[filter.key]?.[0] || null;
+                    html += `
+                        <div class="filter-dropdown">
+                            <div class="dropdown-toggle ${activeValue ? 'active' : ''}" onclick="toggleDropdown(this)">
+                                <span>${activeValue || `Select ${filter.label}`}</span>
+                                <span class="dropdown-arrow">▼</span>
+                            </div>
+                            <div class="dropdown-menu">
+                                ${values.map(value => `
+                                    <div class="dropdown-item ${activeValue === value ? 'selected' : ''}" 
+                                         onclick="selectDropdownValue('${filter.key}', '${value.replace(/'/g, "\\'")}')">
+                                        ${value}
+                                    </div>
+                                `).join('')}
+                            </div>
+                        </div>
+                    `;
+                } else if (filter.type === 'boolean') {
+                    const activeValue = activeFilters[filter.key]?.[0] || 'All';
+                    ['All', 'Yes', 'No'].forEach(value => {
+                        html += `
+                            <div class="filter-chip ${activeValue === value ? 'active' : ''}" 
+                                 onclick="toggleBooleanFilter('${filter.key}', '${value}')">
+                                ${value}
+                            </div>
+                        `;
+                    });
+                }
+
+                html += `</div></div>`;
+            });
+
+            secondaryFilters.innerHTML = html;
+            secondaryFilters.classList.add('active');
+        }
+
+        function getUniqueValuesForFilter(key) {
+            const familyProducts = products.filter(p => p.family === currentFamily);
+            const values = new Set();
+            
+            familyProducts.forEach(product => {
+                const value = product[key];
+                if (value && value !== 'N/A' && value !== null) {
+                    // Split multi-value fields, but NOT commas within chemical names like "1,4 - BDO"
+                    if (typeof value === 'string' && value.includes('\n')) {
+                        // Split on newlines only
+                        value.split(/\n+/).forEach(v => {
+                            const trimmed = v.trim();
+                            if (trimmed) values.add(trimmed);
+                        });
+                    } else if (typeof value === 'string' && value.includes(',')) {
+                        // Only split on commas if they're not part of chemical names (like "1,4")
+                        // Check if comma is followed by a space (likely a separator) or a digit (part of name)
+                        const parts = value.split(/,\s+(?![0-9])/); // Split on ", " not followed by digit
+                        if (parts.length > 1) {
+                            parts.forEach(v => {
+                                const trimmed = v.trim();
+                                if (trimmed) values.add(trimmed);
+                            });
+                        } else {
+                            // No valid splits found, treat as single value
+                            values.add(String(value));
+                        }
+                    } else {
+                        values.add(String(value));
+                    }
+                }
+            });
+            
+            return Array.from(values).sort();
+        }
+
+        function isValueAvailable(filterKey, value) {
+            // Get products that match all OTHER active filters
+            let filtered = products.filter(p => p.family === currentFamily);
+            
+            for (let [key, values] of Object.entries(activeFilters)) {
+                if (key === filterKey) continue; // Skip the filter we're checking
+                
+                filtered = filtered.filter(product => {
+                    return values.some(filterValue => {
+                        return matchesFilterValue(product, key, filterValue);
+                    });
+                });
+            }
+            
+            // Now check if any remaining products have this value
+            return filtered.some(product => matchesFilterValue(product, filterKey, value));
+        }
+
+        function matchesFilterValue(product, key, value) {
+            const productValue = product[key];
+            if (!productValue || productValue === 'N/A') return false;
+            
+            const productValueStr = String(productValue);
+            
+            // Handle multi-value fields - but NOT commas within chemical names
+            if (productValueStr.includes('\n')) {
+                // Split on newlines
+                return productValueStr.split(/\n+/).some(v => 
+                    v.trim().toLowerCase() === value.toLowerCase()
+                );
+            } else if (productValueStr.includes(',')) {
+                // Only split on commas if they're not part of chemical names (like "1,4")
+                const parts = productValueStr.split(/,\s+(?![0-9])/); // Split on ", " not followed by digit
+                if (parts.length > 1) {
+                    return parts.some(v => 
+                        v.trim().toLowerCase() === value.toLowerCase()
+                    );
+                }
+                // No valid splits, treat as single value and fall through
+            }
+            
+            // Handle exact match for chemical names (case insensitive)
+            if (productValueStr.toLowerCase() === value.toLowerCase()) {
+                return true;
+            }
+            
+            // Handle range matching (e.g., "2.3 – 2.7")
+            if (value.includes('–') || value.includes('-')) {
+                return productValueStr === value;
+            }
+            
+            // Partial match for ranges (search "2.5" matches "2.3 – 2.7")
+            if (productValueStr.match(/[\d.]+\s*[–-]\s*[\d.]+/)) {
+                const rangeParts = productValueStr.split(/\s*[–-]\s*/);
+                if (rangeParts.length === 2) {
+                    const min = parseFloat(rangeParts[0]);
+                    const max = parseFloat(rangeParts[1]);
+                    const searchNum = parseFloat(value);
+                    
+                    if (!isNaN(min) && !isNaN(max) && !isNaN(searchNum)) {
+                        return searchNum >= min && searchNum <= max;
+                    }
+                }
+            }
+            
+            return productValueStr.toLowerCase().includes(value.toLowerCase());
+        }
+
+        function toggleFilter(key, value) {
+            if (!activeFilters[key]) {
+                activeFilters[key] = [];
+            }
+            
+            const index = activeFilters[key].indexOf(value);
+            if (index > -1) {
+                activeFilters[key].splice(index, 1);
+                if (activeFilters[key].length === 0) {
+                    delete activeFilters[key];
+                }
+            } else {
+                activeFilters[key].push(value);
+            }
+            
+            buildSecondaryFilters();
+            applyAllFilters();
+        }
+
+        function toggleBooleanFilter(key, value) {
+            if (value === 'All') {
+                delete activeFilters[key];
+            } else {
+                activeFilters[key] = [value];
+            }
+            
+            buildSecondaryFilters();
+            applyAllFilters();
+        }
+
+        function toggleDropdown(element) {
+            const dropdown = element.nextElementSibling;
+            const isActive = dropdown.classList.contains('active');
+            
+            // Close all dropdowns
+            document.querySelectorAll('.dropdown-menu').forEach(d => d.classList.remove('active'));
+            
+            if (!isActive) {
+                dropdown.classList.add('active');
+            }
+        }
+
+        function selectDropdownValue(key, value) {
+            activeFilters[key] = [value];
+            buildSecondaryFilters();
+            applyAllFilters();
+            
+            // Close dropdown
+            document.querySelectorAll('.dropdown-menu').forEach(d => d.classList.remove('active'));
+        }
+
+        function clearAllFilters() {
+            activeFilters = {};
+            buildSecondaryFilters();
+            applyAllFilters();
+        }
+
+        function applyAllFilters() {
+            let filtered = products;
+            
+            // Apply family filter
+            if (currentFamily !== 'all') {
+                filtered = filtered.filter(p => p.family === currentFamily);
+            }
+            
+            // Apply secondary filters
+            for (let [key, values] of Object.entries(activeFilters)) {
+                filtered = filtered.filter(product => {
+                    return values.some(value => matchesFilterValue(product, key, value));
+                });
+            }
+            
+            currentFilteredProducts = filtered;
+            displayProducts(filtered);
+            updateResultsCount();
+            
+            // Show suggestion if no results and filters are active
+            if (filtered.length === 0 && Object.keys(activeFilters).length > 0) {
+                noResultsSuggestion.style.display = 'block';
+            } else {
+                noResultsSuggestion.style.display = 'none';
+            }
+        }
+
+        function updateResultsCount() {
+            const total = currentFamily === 'all' ? products.length : 
+                          products.filter(p => p.family === currentFamily).length;
+            const showing = currentFilteredProducts.length;
+            
+            if (currentFamily === 'all') {
+                resultsCount.textContent = `Showing ${showing} of ${total} products`;
+            } else {
+                resultsCount.textContent = `Showing ${showing} of ${total} ${currentFamily} products`;
+            }
+        }
+
+        // Search functionality with deep crawling
+        searchInput.addEventListener('input', function() {
+            const query = this.value.toLowerCase().trim();
+            
+            if (query.length > 0) {
+                clearButton.classList.add('visible');
+                showSuggestions(query);
+            } else {
+                clearButton.classList.remove('visible');
+                hideSuggestions();
+                applyAllFilters();
+            }
+        });
+
+        clearButton.addEventListener('click', function() {
+            searchInput.value = '';
+            clearButton.classList.remove('visible');
+            hideSuggestions();
+            applyAllFilters();
+            searchInput.focus();
+        });
+
+        function showSuggestions(query) {
+            const matches = [];
+            
+            products.forEach(product => {
+                let matchField = null;
+                let matchValue = null;
+                
+                // Search product name and short name
+                if (product.productName.toLowerCase().includes(query)) {
+                    matchField = 'Name';
+                    matchValue = product.productName;
+                } else if (product.shortName && product.shortName.toLowerCase().includes(query)) {
+                    matchField = 'Code';
+                    matchValue = product.shortName;
+                } else {
+                    // Deep search all fields
+                    for (let [key, value] of Object.entries(product)) {
+                        if (key === 'family' || key.includes('Url')) continue;
+                        if (value && String(value).toLowerCase().includes(query)) {
+                            matchField = key.replace(/([A-Z])/g, ' $1').trim();
+                            matchValue = String(value);
+                            break;
+                        }
+                    }
+                }
+                
+                if (matchField) {
+                    matches.push({product, matchField, matchValue});
+                }
+            });
+
+            if (matches.length > 0) {
+                suggestionsDiv.innerHTML = matches.slice(0, 10).map((match, index) => `
+                    <div class="suggestion-item" data-name="${match.product.productName}" data-index="${index}">
+                        <div class="suggestion-main">
+                            <span class="product-name">${highlightMatch(match.product.productName, query)}</span>
+                            <span class="product-family">${match.product.family}</span>
+                            <span class="match-info">Matches ${match.matchField}: ${highlightMatch(match.matchValue, query)}</span>
+                        </div>
+                    </div>
+                `).join('');
+                
+                suggestionsDiv.classList.add('active');
+                selectedIndex = -1;
+
+                suggestionsDiv.querySelectorAll('.suggestion-item').forEach(item => {
+                    item.addEventListener('click', function() {
+                        selectProduct(this.dataset.name);
+                    });
+                });
+            } else {
+                hideSuggestions();
+            }
+        }
+
+        function highlightMatch(text, query) {
+            const regex = new RegExp(`(${query})`, 'gi');
+            return text.replace(regex, '<strong>$1</strong>');
+        }
+
+        function hideSuggestions() {
+            suggestionsDiv.classList.remove('active');
+            suggestionsDiv.innerHTML = '';
+        }
+
+        function selectProduct(productName) {
+            const product = products.find(p => p.productName === productName);
+            if (product) {
+                searchInput.value = product.productName;
+                hideSuggestions();
+                
+                // Apply search to filtered results
+                currentFilteredProducts = [product];
+                displayProducts([product]);
+                updateResultsCount();
+            }
+        }
+
+        function displayAllProducts() {
+            currentFilteredProducts = products;
+            displayProducts(products);
+        }
+
+        function displayProducts(productsToShow) {
+            if (productsToShow.length === 0) {
+                resultsContainer.innerHTML = `
+                    <div class="no-results">
+                        <div class="no-results-icon">🔍</div>
+                        <h3>No Products Found</h3>
+                        <p>Try adjusting your filters or search terms.</p>
+                    </div>
+                `;
+                return;
+            }
+
+            resultsContainer.innerHTML = productsToShow.map(product => {
+                const familyClass = product.family.toLowerCase().replace(/\s+/g, '-');
+                return `
+                    <div class="product-card ${familyClass}">
+                        <div class="product-header">
+                            <div>
+                                <h2>${product.productName}</h2>
+                            </div>
+                            <span class="product-family-badge ${familyClass}">${product.family}</span>
+                        </div>
+                        <div class="product-body">
+                            ${generateSpecsGrid(product)}
+                            ${generateDocumentLinks(product)}
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function generateSpecsGrid(product) {
+            let specsHtml = '<div class="specs-grid">';
+
+            if (product.family === 'Imuthane') {
+                specsHtml += `
+                    <div class="spec-item">
+                        <div class="spec-label">Shore Hardness</div>
+                        <div class="spec-value">${product.shoreHardness || 'N/A'}</div>
+                    </div>
+                    <div class="spec-item">
+                        <div class="spec-label">Product Type</div>
+                        <div class="spec-value">${product.productType || 'N/A'}</div>
+                    </div>
+                    <div class="spec-item">
+                        <div class="spec-label">Chemistry</div>
+                        <div class="spec-value">${product.chemistry || 'N/A'}</div>
+                    </div>
+                    <div class="spec-item">
+                        <div class="spec-label">% NCO</div>
+                        <div class="spec-value">${product.ncoRange || 'N/A'}</div>
+                    </div>
+                    <div class="spec-item full-width">
+                        <div class="spec-label">Typical Pot Life</div>
+                        <div class="spec-value">${product.potLife || 'N/A'}</div>
+                    </div>
+                `;
+            } else if (product.family === 'Blocked Imuthane') {
+                specsHtml += `
+                    <div class="spec-item">
+                        <div class="spec-label">Chemistry</div>
+                        <div class="spec-value">${product.chemistry || 'N/A'}</div>
+                    </div>
+                    <div class="spec-item">
+                        <div class="spec-label">Blocked NCO</div>
+                        <div class="spec-value">${product.blockedNco || 'N/A'}</div>
+                    </div>
+                    <div class="spec-item">
+                        <div class="spec-label">Unblocked NCO</div>
+                        <div class="spec-value">${product.unblockedNco || 'N/A'}</div>
+                    </div>
+                    <div class="spec-item">
+                        <div class="spec-label">Viscosity cPs</div>
+                        <div class="spec-value">${product.viscosity || 'N/A'}</div>
+                    </div>
+                `;
+            } else if (product.family === 'Imuthane Systems') {
+                specsHtml += `
+                    <div class="spec-item full-width">
+                        <div class="spec-label">Description</div>
+                        <div class="spec-value">${product.description || 'N/A'}</div>
+                    </div>
+                    <div class="spec-item">
+                        <div class="spec-label">Shore Hardness</div>
+                        <div class="spec-value">${product.shoreHardness || 'N/A'}</div>
+                    </div>
+                    <div class="spec-item">
+                        <div class="spec-label">Pot Life</div>
+                        <div class="spec-value">${product.potLife || 'N/A'}</div>
+                    </div>
+                `;
+            } else if (product.family === 'Imuthane Additives') {
+                specsHtml += `
+                    <div class="spec-item full-width">
+                        <div class="spec-label">Description</div>
+                        <div class="spec-value">${product.description || 'N/A'}</div>
+                    </div>
+                    <div class="spec-item">
+                        <div class="spec-label">OH Number</div>
+                        <div class="spec-value">${product.ohNumber || 'N/A'}</div>
+                    </div>
+                    <div class="spec-item">
+                        <div class="spec-label">Pot Life</div>
+                        <div class="spec-value">${product.potLife || 'N/A'}</div>
+                    </div>
+                `;
+            } else if (product.family === 'Imucure') {
+                specsHtml += `
+                    <div class="spec-item">
+                        <div class="spec-label">Chemistry</div>
+                        <div class="spec-value">${product.chemistry || 'N/A'}</div>
+                    </div>
+                    <div class="spec-item">
+                        <div class="spec-label">Viscosity cPs</div>
+                        <div class="spec-value">${product.viscosity || 'N/A'}</div>
+                    </div>
+                    <div class="spec-item">
+                        <div class="spec-label">Equivalent Weight</div>
+                        <div class="spec-value">${product.equivalentWeight || 'N/A'}</div>
+                    </div>
+                    <div class="spec-item">
+                        <div class="spec-label">Melting Point</div>
+                        <div class="spec-value">${product.meltingPoint || 'N/A'}</div>
+                    </div>
+                `;
+            } else if (product.family === 'Diexter') {
+                specsHtml += `
+                    <div class="spec-item">
+                        <div class="spec-label">OH Number</div>
+                        <div class="spec-value">${product.ohNumber || 'N/A'}</div>
+                    </div>
+                    <div class="spec-item">
+                        <div class="spec-label">Avg. Mol. Wt.</div>
+                        <div class="spec-value">${product.avgMolWeight || 'N/A'}</div>
+                    </div>
+                    <div class="spec-item">
+                        <div class="spec-label">Acid # Max</div>
+                        <div class="spec-value">${product.acidNumber || 'N/A'}</div>
+                    </div>
+                    <div class="spec-item">
+                        <div class="spec-label">Functionality</div>
+                        <div class="spec-value">${product.functionality || 'N/A'}</div>
+                    </div>
+                    <div class="spec-item">
+                        <div class="spec-label">Viscosity</div>
+                        <div class="spec-value">${product.viscosity || 'N/A'}</div>
+                    </div>
+                    <div class="spec-item">
+                        <div class="spec-label">Phase @ 25°C</div>
+                        <div class="spec-value">${product.phase || 'N/A'}</div>
+                    </div>
+                    <div class="spec-item full-width">
+                        <div class="spec-label">Glycols</div>
+                        <div class="spec-value">${product.glycols || 'N/A'}</div>
+                    </div>
+                `;
+            } else if (product.family === 'Diexter Specialty') {
+                specsHtml += `
+                    <div class="spec-item full-width">
+                        <div class="spec-label">Description</div>
+                        <div class="spec-value">${product.description || 'N/A'}</div>
+                    </div>
+                    <div class="spec-item">
+                        <div class="spec-label">OH Number</div>
+                        <div class="spec-value">${product.ohNumber || 'N/A'}</div>
+                    </div>
+                    <div class="spec-item">
+                        <div class="spec-label">Acid # Max</div>
+                        <div class="spec-value">${product.acidNumber || 'N/A'}</div>
+                    </div>
+                    <div class="spec-item">
+                        <div class="spec-label">APHA Max</div>
+                        <div class="spec-value">${product.aphaMax || 'N/A'}</div>
+                    </div>
+                    <div class="spec-item">
+                        <div class="spec-label">Functionality</div>
+                        <div class="spec-value">${product.functionality || 'N/A'}</div>
+                    </div>
+                    <div class="spec-item">
+                        <div class="spec-label">Viscosity</div>
+                        <div class="spec-value">${product.viscosity || 'N/A'}</div>
+                    </div>
+                    <div class="spec-item">
+                        <div class="spec-label">Phase @ 25°C</div>
+                        <div class="spec-value">${product.phase || 'N/A'}</div>
+                    </div>
+                `;
+            } else if (product.family === 'Isoexter') {
+                specsHtml += `
+                    <div class="spec-item">
+                        <div class="spec-label">OH Number</div>
+                        <div class="spec-value">${product.ohNumber || 'N/A'}</div>
+                    </div>
+                    <div class="spec-item">
+                        <div class="spec-label">Acid # Max</div>
+                        <div class="spec-value">${product.acidNumber || 'N/A'}</div>
+                    </div>
+                    <div class="spec-item">
+                        <div class="spec-label">Functionality</div>
+                        <div class="spec-value">${product.functionality || 'N/A'}</div>
+                    </div>
+                    <div class="spec-item">
+                        <div class="spec-label">Viscosity</div>
+                        <div class="spec-value">${product.viscosity || 'N/A'}</div>
+                    </div>
+                `;
+            } else if (product.family === 'Exter-S') {
+                specsHtml += `
+                    <div class="spec-item">
+                        <div class="spec-label">Solids %</div>
+                        <div class="spec-value">${product.solids || 'N/A'}</div>
+                    </div>
+                    <div class="spec-item">
+                        <div class="spec-label">Solvent</div>
+                        <div class="spec-value">${product.solvent || 'N/A'}</div>
+                    </div>
+                    <div class="spec-item">
+                        <div class="spec-label">Tg</div>
+                        <div class="spec-value">${product.tg || 'N/A'}</div>
+                    </div>
+                    <div class="spec-item">
+                        <div class="spec-label">Viscosity</div>
+                        <div class="spec-value">${product.viscosity || 'N/A'}</div>
+                    </div>
+                    <div class="spec-item">
+                        <div class="spec-label">OH Number</div>
+                        <div class="spec-value">${product.ohNumber || 'N/A'}</div>
+                    </div>
+                    <div class="spec-item">
+                        <div class="spec-label">Acid Number</div>
+                        <div class="spec-value">${product.acidNumber || 'N/A'}</div>
+                    </div>
+                    <div class="spec-item full-width">
+                        <div class="spec-label">Applications</div>
+                        <div class="spec-value">${product.applications || 'N/A'}</div>
+                    </div>
+                `;
+            } else if (product.family === 'Hydroexter') {
+                specsHtml += `
+                    <div class="spec-item">
+                        <div class="spec-label">Percent Solids</div>
+                        <div class="spec-value">${product.solids || 'N/A'}</div>
+                    </div>
+                    <div class="spec-item">
+                        <div class="spec-label">Viscosity</div>
+                        <div class="spec-value">${product.viscosity || 'N/A'}</div>
+                    </div>
+                    <div class="spec-item">
+                        <div class="spec-label">OH Number</div>
+                        <div class="spec-value">${product.ohNumber || 'N/A'}</div>
+                    </div>
+                    <div class="spec-item">
+                        <div class="spec-label">pH</div>
+                        <div class="spec-value">${product.pH || 'N/A'}</div>
+                    </div>
+                `;
+            } else if (product.family === 'Novacote Adhesives') {
+                specsHtml += `
+                    <div class="spec-item">
+                        <div class="spec-label">Technology</div>
+                        <div class="spec-value">${product.technology || 'N/A'}</div>
+                    </div>
+                    <div class="spec-item">
+                        <div class="spec-label">Chemistry</div>
+                        <div class="spec-value">${product.chemistry || 'N/A'}</div>
+                    </div>
+                    <div class="spec-item full-width">
+                        <div class="spec-label">Application</div>
+                        <div class="spec-value">${product.application || 'N/A'}</div>
+                    </div>
+                    <div class="spec-item full-width">
+                        <div class="spec-label">Highest FDA Clearance</div>
+                        <div class="spec-value">${product.fdaClearance || 'N/A'}</div>
+                    </div>
+                `;
+            } else if (product.family === 'Novacote Coatings') {
+                specsHtml += `
+                    <div class="spec-item full-width">
+                        <div class="spec-label">Technology</div>
+                        <div class="spec-value">${product.technology || 'N/A'}</div>
+                    </div>
+                    <div class="spec-item full-width">
+                        <div class="spec-label">Application</div>
+                        <div class="spec-value">${product.application || 'N/A'}</div>
+                    </div>
+                    <div class="spec-item full-width">
+                        <div class="spec-label">Coated Substrate</div>
+                        <div class="spec-value">${product.coatedSubstrate || 'N/A'}</div>
+                    </div>
+                    <div class="spec-item full-width">
+                        <div class="spec-label">Seal to Substrate</div>
+                        <div class="spec-value">${product.sealToSubstrate || 'N/A'}</div>
+                    </div>
+                    <div class="spec-item">
+                        <div class="spec-label">PVC Free</div>
+                        <div class="spec-value boolean">${formatBoolean(product.pvcFree)}</div>
+                    </div>
+                    <div class="spec-item">
+                        <div class="spec-label">Styrene Free</div>
+                        <div class="spec-value boolean">${formatBoolean(product.styreneFree)}</div>
+                    </div>
+                    <div class="spec-item">
+                        <div class="spec-label">Anti Fog</div>
+                        <div class="spec-value boolean">${formatBoolean(product.antiFog)}</div>
+                    </div>
+                `;
+            } else if (product.family === 'Neotherm') {
+                specsHtml += `
+                    <div class="spec-item full-width">
+                        <div class="spec-label">End-Use Market</div>
+                        <div class="spec-value">${product.endUseMarket || 'N/A'}</div>
+                    </div>
+                    <div class="spec-item">
+                        <div class="spec-label">Viscosity</div>
+                        <div class="spec-value">${product.viscosity || 'N/A'}</div>
+                    </div>
+                    <div class="spec-item">
+                        <div class="spec-label">Processing Temp</div>
+                        <div class="spec-value">${product.processingTemp || 'N/A'}</div>
+                    </div>
+                    <div class="spec-item">
+                        <div class="spec-label">Initial Strength</div>
+                        <div class="spec-value">${product.initialStrength || 'N/A'}</div>
+                    </div>
+                    <div class="spec-item">
+                        <div class="spec-label">Open Time</div>
+                        <div class="spec-value">${product.openTime || 'N/A'}</div>
+                    </div>
+                `;
+            }
+
+            specsHtml += '</div>';
+            return specsHtml;
+        }
+
+        function formatBoolean(value) {
+            if (value === 'Yes' || value === true) {
+                return '<span class="check-yes">✓</span> Yes';
+            } else if (value === 'No' || value === false) {
+                return '<span class="check-no">✗</span> No';
+            }
+            return 'N/A';
+        }
+
+        function generateDocumentLinks(product) {
+            let linksHtml = '<div class="document-links">';
+
+            if (product.tdsUrl) {
+                linksHtml += `
+                    <a href="#" class="doc-link tds" onclick="handleDocumentClick('TDS', '${product.productName}', '${product.tdsUrl}'); return false;">
+                        <svg fill="currentColor" viewBox="0 0 20 20">
+                            <path d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z"></path>
+                            <path fill-rule="evenodd" d="M4 5a2 2 0 012-2 1 1 0 000 2H6a2 2 0 00-2 2v6a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-1a1 1 0 100-2h1a4 4 0 014 4v6a4 4 0 01-4 4H6a4 4 0 01-4-4V7a4 4 0 014-4z" clip-rule="evenodd"></path>
+                        </svg>
+                        <span>TDS</span>
+                    </a>
+                `;
+            } else {
+                linksHtml += `
+                    <a class="doc-link tds disabled" title="Contact Taylor for TDS">
+                        <svg fill="currentColor" viewBox="0 0 20 20">
+                            <path d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z"></path>
+                            <path fill-rule="evenodd" d="M4 5a2 2 0 012-2 1 1 0 000 2H6a2 2 0 00-2 2v6a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-1a1 1 0 100-2h1a4 4 0 014 4v6a4 4 0 01-4 4H6a4 4 0 01-4-4V7a4 4 0 014-4z" clip-rule="evenodd"></path>
+                        </svg>
+                        <span>TDS</span>
+                    </a>
+                `;
+            }
+
+            if (product.family === 'Novacote Adhesives') {
+                if (product.sdsPrepolymerUrl) {
+                    linksHtml += `
+                        <a href="#" class="doc-link sds" onclick="handleDocumentClick('SDS', '${product.productName} (Prepolymer)', '${product.sdsPrepolymerUrl}'); return false;">
+                            <svg fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path>
+                            </svg>
+                            <span>SDS - Prepolymer</span>
+                        </a>
+                    `;
+                } else {
+                    linksHtml += `<a class="doc-link sds disabled" title="Contact Elizabeth for SDS">
+                        <svg fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path>
+                        </svg>
+                        <span>SDS - Prepolymer</span>
+                    </a>`;
+                }
+
+                if (product.sdsCurativeUrl) {
+                    linksHtml += `
+                        <a href="#" class="doc-link sds" onclick="handleDocumentClick('SDS', '${product.productName} (Curative)', '${product.sdsCurativeUrl}'); return false;">
+                            <svg fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path>
+                            </svg>
+                            <span>SDS - Curative</span>
+                        </a>
+                    `;
+                } else {
+                    linksHtml += `<a class="doc-link sds disabled" title="Contact Elizabeth for SDS">
+                        <svg fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path>
+                        </svg>
+                        <span>SDS - Curative</span>
+                    </a>`;
+                }
+            } else {
+                if (product.sdsUrl) {
+                    linksHtml += `
+                        <a href="#" class="doc-link sds" onclick="handleDocumentClick('SDS', '${product.productName}', '${product.sdsUrl}'); return false;">
+                            <svg fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path>
+                            </svg>
+                            <span>SDS</span>
+                        </a>
+                    `;
+                } else {
+                    linksHtml += `
+                        <a class="doc-link sds disabled" title="Contact Elizabeth for SDS">
+                            <svg fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path>
+                            </svg>
+                            <span>SDS</span>
+                        </a>
+                    `;
+                }
+            }
+
+            linksHtml += '</div>';
+            return linksHtml;
+        }
+
+        function handleDocumentClick(docType, productName, url) {
+            if (!url) {
+                const contact = docType === 'TDS' ? 'Taylor' : 'Elizabeth';
+                alert(`Please contact ${contact} for the ${docType} document for ${productName}`);
+                return;
+            }
+
+            showLoading();
+            setTimeout(() => {
+                hideLoading();
+                window.open(url, '_blank');
+            }, 300);
+        }
+
+        function showLoading() {
+            loadingDiv.classList.add('active');
+        }
+
+        function hideLoading() {
+            loadingDiv.classList.remove('active');
+        }
+
+        // Close dropdowns when clicking outside
+        document.addEventListener('click', function(e) {
+            if (!e.target.closest('.filter-dropdown')) {
+                document.querySelectorAll('.dropdown-menu').forEach(d => d.classList.remove('active'));
+            }
+            if (!searchInput.contains(e.target) && !suggestionsDiv.contains(e.target)) {
+                hideSuggestions();
+            }
+        });
+
+        console.log('%c🏭 COIM Product Portal v2.0', 'color: #16A0DB; font-size: 20px; font-weight: bold');
+        console.log('%c✨ Enhanced with Dynamic Filtering & Deep Search', 'color: #7D6991; font-size: 14px');
+    </script>
+
+    <footer class="portal-footer">
+        <div class="timestamp">Generated: 2026-06-16 13:58:13</div>
+        <div class="contact">For updates or additions, contact Kevin Fernandes at <a href="/cdn-cgi/l/email-protection#630806150a0d4d0506110d020d07061023000c0a0e04110c16134d000c0e"><span class="__cf_
